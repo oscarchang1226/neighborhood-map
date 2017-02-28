@@ -1,0 +1,22 @@
+{
+  "name": "neighborhood-map",
+  "homepage": "https://github.com/oscarchang1226/neighborhood-map",
+  "authors": [
+    "Oscar <oscarchang1226@gmail.com>"
+  ],
+  "description": "Display locations in a neighborhood.",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "knockout": "^3.4.1",
+    "requirejs": "^2.3.3"
+  }
+}
