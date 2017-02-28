@@ -5,3 +5,11 @@ body {
     width: 100vw;
     height: 100vh;
 }
+#clear-button {
+    position: fixed;
+    top: 0;
+}
+#recenter-button {
+    position: fixed;
+    top: 25px;
+}
