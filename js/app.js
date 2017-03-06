@@ -8,9 +8,15 @@ require.config({
 
 require([
     "knockout",
+    "jquery",
     "viewmodels/viewmodel"
-], function(ko, ViewModel) {
+], function(ko, $, ViewModel) {
     "use strict";
+
+    $("#menu-button").click(function(e) {
+        e.stopPropagation();
+        $("nav").toggleClass("close");
+    });
 
     ko.applyBindings(new ViewModel());
 

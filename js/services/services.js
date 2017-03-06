@@ -1,7 +1,6 @@
 define([
-    "jquery",
     "googlemaps"
-], function(jquery) {
+], function() {
     "use strict";
 
     function initMap() {

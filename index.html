@@ -8,9 +8,16 @@
     </head>
     <body>
         <!-- <google-map></google-map> -->
+        <nav>
+            <input type="text" name="" value="">
+            <button type="button" name="menu" id="menu-button">Menu</button>
+            <button type="button" name="clear" id="clear-button" data-bind="click: clearMarkers">Clear</button>
+            <button type="button" name="recenter" id="recenter-button" data-bind="click: recenter">Re-center</button>
+            <ul data-bind="foreach: locations">
+                <li data-bind="text: name, click: $parent.locationClick"></li>
+            </ul>
+        </nav>
         <div id="map"></div>
-        <button type="button" name="button" id="clear-button" data-bind="click: clearMarkers">Clear</button>
-        <button type="button" name="button" id="recenter-button" data-bind="click: recenter">Re-center</button>
         <script data-main="js/app" type="text/javascript" src="bower_components/requirejs/require.js"></script>
     </body>
 </html>
