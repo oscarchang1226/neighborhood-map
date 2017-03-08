@@ -28,13 +28,14 @@ nav button {
     height: 48px;
     width: 48px;
     border-radius: 50%;
-    background-color: cornflowerblue;
     border: none;
     transform: translate(308px, 0);
     transition: all .4s ease-in-out;
-    color: white;
     outline: none;
     opacity: 1;
+    background: none;
+    background-color: #fff;
+    box-shadow: 1px 1px 4px rgba(0,0,0,.4);
 }
 nav #menu-button {
     z-index: 4;
