@@ -15,6 +15,7 @@ define([
         vm.neighborhood = ko.observable();
         vm.locations = ko.observableArray();
         vm.markers = ko.observableArray();
+        vm.radius = ko.observable(2500);
 
         vm.getPlaceDetails = getPlaceDetails;
         vm.setNeighborhood = setNeighborhood;
@@ -37,16 +38,21 @@ define([
             vm.neighborhood = ko.observable(neighborhood);
             vm.map.setCenter(neighborhood.geometry.location);
             if(vm.locations().length === 0) {
+                if(!vm.circle) {
+                    vm.circle = services.drawCircle(neighborhood.geometry.location,
+                        vm.map, vm.radius());
+                }
                 searchNeighborhood({location: neighborhood.geometry.location,
-                    radius: 250});
+                    radius: vm.radius()});
             }
         }
 
         function searchNeighborhood(request) {
-            request.bounds = vm.neighborhood().geometry.viewport;
+            // request.bounds = vm.neighborhood().geometry.viewport;
             vm.placesService.nearbySearch(request, function(result, status, pagination) {
                 if(services.checkPlaceStatus(status)) {
                     vm.pagination = pagination;
+                    console.log(result);
                     result.forEach(function(place) {
                         // vm.markers().push(services.addMarker(place, vm.map, function() {
                         //     getPlaceDetails(place.place_id, markerClick);
@@ -66,7 +72,7 @@ define([
 
         function recenter() {
             vm.map.setCenter(vm.neighborhood().geometry.location);
-            vm.map.setZoom(15);
+            vm.map.setZoom(14);
         }
 
         function markerClick(place, status) {
