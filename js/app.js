@@ -18,7 +18,31 @@ require([
         $("nav").toggleClass("close");
     });
 
-    ko.applyBindings(new ViewModel());
+    var viewModel = new ViewModel();
+    var NEIGHBORHOOD_ID = "ChIJGZudLZ3FQIYREC4v5KoYUlg";
+
+    viewModel.getPlaceDetails(NEIGHBORHOOD_ID, function(result, status) {
+        if(viewModel.checkPlaceStatus(status)) {
+            viewModel.setNeighborhood(result);
+            var request = viewModel.generateSearchRequest();
+            viewModel.searchNeighborhood(request);
+        }
+    });
+
+    viewModel.userInput.subscribe(function(userInput) {
+        var request;
+        if(userInput && userInput.length > 2) {
+            request = viewModel.generateSearchRequest(true);
+            viewModel.searchNeighborhood(request);
+        } else {
+            if(viewModel.locations().length === 0) {
+                request = viewModel.generateSearchRequest();
+                viewModel.searchNeighborhood(request);
+            }
+        }
+    });
+
+    ko.applyBindings(viewModel);
 
 
 });

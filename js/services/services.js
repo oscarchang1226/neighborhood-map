@@ -53,11 +53,16 @@ define([
         return circle;
     }
 
+    function createAutocompelte(ele) {
+        return new google.maps.places.Autocomplete(ele);
+    }
+
     return {
         initMap: initMap,
         initPlacesService: initPlacesService,
         addMarker: addMarker,
         checkPlaceStatus: checkPlaceStatus,
-        drawCircle: drawCircle
+        drawCircle: drawCircle,
+        createAutocompelte: createAutocompelte
     };
 });

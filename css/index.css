@@ -61,6 +61,7 @@ nav.close #clear-button {
 nav ul {
     margin: 0;
     height: calc(100% - 46px);
+    overflow-y: auto;
 }
 nav input[type="text"] {
     width: 90%;

@@ -6,58 +6,69 @@ define([
 ], function(ko, models, services, $) {
     "use strict";
 
-    var NEIGHBORHOOD_ID = "ChIJGZudLZ3FQIYREC4v5KoYUlg";
-
     function ViewModel() {
         var vm = this;
+
         vm.map = services.initMap();
         vm.placesService = services.initPlacesService(vm.map);
+        vm.pagination = null;
+
         vm.neighborhood = ko.observable();
+        vm.userInput = ko.observable();
+        vm.focusedMarker = ko.observable();
         vm.locations = ko.observableArray();
         vm.markers = ko.observableArray();
         vm.radius = ko.observable(2500);
 
+        vm.checkPlaceStatus = checkPlaceStatus;
         vm.getPlaceDetails = getPlaceDetails;
+        vm.generateSearchRequest = generateSearchRequest;
         vm.setNeighborhood = setNeighborhood;
+        vm.searchNeighborhood = searchNeighborhood;
         vm.clearMarkers = clearMarkers;
         vm.recenter = recenter;
         vm.locationClick = locationClick;
-        vm.pagination = null;
 
-        getPlaceDetails(NEIGHBORHOOD_ID, function(result, status) {
-            if(services.checkPlaceStatus(status)) {
-                return setNeighborhood(result);
-            }
-        });
+        function checkPlaceStatus(status) {
+            return services.checkPlaceStatus(status);
+        }
 
         function getPlaceDetails(placeId, callback) {
             vm.placesService.getDetails({placeId: placeId}, callback);
         }
 
+        function generateSearchRequest(useName) {
+            var request = {
+                location: vm.neighborhood().geometry.location,
+                radius: vm.radius()
+            };
+            if(useName) {
+                request.name = vm.userInput().trim();
+            }
+            return request;
+        }
+
         function setNeighborhood(neighborhood) {
             vm.neighborhood = ko.observable(neighborhood);
             vm.map.setCenter(neighborhood.geometry.location);
-            if(vm.locations().length === 0) {
-                if(!vm.circle) {
-                    vm.circle = services.drawCircle(neighborhood.geometry.location,
-                        vm.map, vm.radius());
-                }
-                searchNeighborhood({location: neighborhood.geometry.location,
-                    radius: vm.radius()});
-            }
         }
 
         function searchNeighborhood(request) {
             // request.bounds = vm.neighborhood().geometry.viewport;
+            vm.locations.removeAll();
             vm.placesService.nearbySearch(request, function(result, status, pagination) {
                 if(services.checkPlaceStatus(status)) {
                     vm.pagination = pagination;
-                    console.log(result);
+                    // console.log(result);
                     result.forEach(function(place) {
-                        // vm.markers().push(services.addMarker(place, vm.map, function() {
-                        //     getPlaceDetails(place.place_id, markerClick);
-                        // }));
-                        vm.locations.push(place);
+                        if(place.types.indexOf("political") < 0) {
+                            vm.locations.push(place);
+                            if(!checkIfMarkerExist(place.geometry.location)) {
+                                vm.markers().push(services.addMarker(place, vm.map, function() {
+                                    getPlaceDetails(place.place_id, markerClick);
+                                }));
+                            }
+                        }
                     });
                 }
             });
@@ -75,9 +86,28 @@ define([
             vm.map.setZoom(14);
         }
 
+        function locationClick(place, e) {
+            if(!checkIfMarkerExist(place.geometry.location)) {
+                vm.focusedMarker = ko.observable(services.addMarker(place, vm.map, function() {
+                    getPlaceDetails(place.place_id, markerClick);
+                }));
+                vm.markers().push(vm.focusedMarker());
+            } else {
+                var placeMarker = vm.markers().filter(function(m) {
+                    return m.position == place.geometry.location;
+                });
+                if(placeMarker.length === 1) {
+                    vm.focusedMarker = ko.observable(placeMarker[0]);
+                }
+            }
+            vm.map.setCenter(place.geometry.location);
+            vm.map.setZoom(17);
+            $("nav").toggleClass("close");
+        }
+
         function markerClick(place, status) {
             if(services.checkPlaceStatus(status)) {
-                console.log(place.name);
+                console.log(place.geometry.location.lat(), place.geometry.location.lng());
             }
         }
 
@@ -87,17 +117,6 @@ define([
                     location.lng() == marker.position.lng();
             }));
             return temp.length > 0;
-        }
-
-        function locationClick(place, e) {
-            if(!checkIfMarkerExist(place.geometry.location)) {
-                vm.markers().push(services.addMarker(place, vm.map, function() {
-                    getPlaceDetails(place.place_id, markerClick);
-                }));
-            }
-            vm.map.setCenter(place.geometry.location);
-            vm.map.setZoom(16);
-            $("nav").toggleClass("close");
         }
 
     }
