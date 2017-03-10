@@ -34,6 +34,7 @@ require([
         if(userInput && userInput.length > 2) {
             request = viewModel.generateSearchRequest(true);
             viewModel.searchNeighborhood(request);
+            $("nav").removeClass("close");
         } else {
             if(viewModel.locations().length === 0) {
                 request = viewModel.generateSearchRequest();

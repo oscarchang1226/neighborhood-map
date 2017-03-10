@@ -4,19 +4,30 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Neighborhood Map</title>
+        <link  rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/material-icons.css">
     </head>
     <body>
         <!-- <google-map></google-map> -->
-        <nav>
+        <nav class="close">
             <input type="text" data-bind="textInput: userInput">
-            <button type="button" name="menu" id="menu-button">Menu</button>
-            <button type="button" name="clear" id="clear-button" data-bind="click: clearMarkers">Clear</button>
-            <button type="button" name="recenter" id="recenter-button" data-bind="click: recenter">Re-center</button>
-            <ul data-bind="foreach: locations">
-                <li data-bind="text: name, click: $parent.locationClick"></li>
-            </ul>
+            <button type="button" name="menu" id="menu-button">
+                <i class="material-icons md-18">menu</i>
+            </button>
+            <button type="button" name="clear" id="clear-button" data-bind="click: clearMarkers">
+                <i class="material-icons md-18">clear</i>
+            </button>
+            <button type="button" name="recenter" id="recenter-button" data-bind="click: recenter">
+                <i class="material-icons md-18">my_location</i>
+            </button>
+            <div id="ul-container">
+                <ul data-bind="foreach: locations">
+                    <li data-bind="text: name, click: $parent.locationClick"></li>
+                </ul>
+            </div>
         </nav>
+        <div id="backstage"></div>
         <div id="map"></div>
         <script data-main="js/app" type="text/javascript" src="bower_components/requirejs/require.js"></script>
     </body>

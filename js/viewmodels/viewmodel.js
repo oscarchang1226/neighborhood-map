@@ -79,11 +79,13 @@ define([
                 marker.setMap(null);
             });
             vm.markers = ko.observableArray();
+            $("nav").addClass("close");
         }
 
         function recenter() {
             vm.map.setCenter(vm.neighborhood().geometry.location);
             vm.map.setZoom(14);
+            $("nav").addClass("close");
         }
 
         function locationClick(place, e) {
@@ -102,12 +104,12 @@ define([
             }
             vm.map.setCenter(place.geometry.location);
             vm.map.setZoom(17);
-            $("nav").toggleClass("close");
+            $("nav").addClass("close");
         }
 
         function markerClick(place, status) {
             if(services.checkPlaceStatus(status)) {
-                console.log(place.geometry.location.lat(), place.geometry.location.lng());
+                console.log(place);
             }
         }
 

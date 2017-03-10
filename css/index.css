@@ -8,7 +8,7 @@ body {
 }
 nav {
     box-sizing: border-box;
-    position: fixed;
+    /*position: fixed;
     z-index: 1;
     height: calc(100vh - 40px);
     transition: all .4s ease-in-out;
@@ -18,37 +18,50 @@ nav {
     display: flex;
     flex-direction: column;
     border-radius: 2px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,.4);
+    box-shadow: 2px 2px 2px rgba(0,0,0,.4),
+        0 -1px 2px rgba(0,0,0,.4);*/
+    position: fixed;
+    width: 0;
+    height: 0;
+    z-index: 1;
 }
 nav * {
     box-sizing: border-box;
 }
 nav button {
-    position: absolute;
-    height: 48px;
-    width: 48px;
-    border-radius: 50%;
+    position: fixed;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px rgba(0,0,0,.2);
     border: none;
-    transform: translate(308px, 0);
-    transition: all .4s ease-in-out;
     outline: none;
-    opacity: 1;
     background: none;
     background-color: #fff;
-    box-shadow: 1px 1px 4px rgba(0,0,0,.4);
+    cursor: pointer;
 }
 nav #menu-button {
     z-index: 4;
+    font-size: 12px;
+    top: 10px;
+    padding-top: calc((35px - 24px) / 2);
+    height: 35px;
+    width: 35px;
+    left: 10px;
+}
+nav #recenter-button,
+nav #clear-button {
+    right: 10px;
+    height: 28px;
+    width: 28px;
+    padding: 2px 0 0 0;
+    z-index: 2;
 }
 nav #recenter-button {
-    z-index: 3;
-    transform: translate(308px, 56px);
+    bottom: 158px;
 }
 nav #clear-button {
-    z-index: 2;
-    transform: translate(308px, 112px);
+    bottom: 124px;
 }
-nav.close {
+/*nav.close {
     transform: translate(-300px, 0);
     box-shadow: none;
 }
@@ -57,19 +70,63 @@ nav.close #clear-button {
     z-index: -1;
     opacity: 0;
     transform: translate(308px, 0);
+}*/
+nav.close #ul-container {
+    transform: translate(-101%, 0);
+}
+nav #ul-container {
+    position: fixed;
+    height: calc(100% - 89px);
+    width: calc(100% - 119px);
+    background-color: #fff;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px rgba(0,0,0,.2);
+    padding: 54px 4px 16px;
+    transition: all .4s ease-in-out;
+    transform: translate(0, 0);
+}
+#backstage {
+
 }
 nav ul {
-    margin: 0;
-    height: calc(100% - 46px);
     overflow-y: auto;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
-nav input[type="text"] {
-    width: 90%;
-    margin: 8px auto;
-    border: 1px solid rgba(0,0,0,.4);
-    line-height: 28px;
-    padding: 0 0 0 4px;
-    border-radius: 2px;
+nav li {
+    width: 100%;
+    margin: 0 auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     font-size: 14px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,.2);
+    padding: 8px 4px;
+}
+/*nav li:not(:last-child) {
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}*/
+nav input[type="text"] {
+    position: fixed;
+    margin: 0;
+    width: calc(100% - 175px);
+    left: 52px;
+    line-height: 35px;
+    border: none;
+    top: 10px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, .2);
+    font-size: 12px;
+    border-radius: 2px;
+    padding: 0 8px;
+    z-index: 4;
+    transition: all .4s ease-in-out;
+}
+nav input[type="text"].active {
+    width: calc(100% - 60px);
+}
+nav #ul-container.active {
+    width:100%;
 }
