@@ -13,11 +13,6 @@ require([
 ], function(ko, $, ViewModel) {
     "use strict";
 
-    $("#menu-button").click(function(e) {
-        e.stopPropagation();
-        $("nav").toggleClass("close");
-    });
-
     var viewModel = new ViewModel();
     var NEIGHBORHOOD_ID = "ChIJGZudLZ3FQIYREC4v5KoYUlg";
 
@@ -34,13 +29,36 @@ require([
         if(userInput && userInput.length > 2) {
             request = viewModel.generateSearchRequest(true);
             viewModel.searchNeighborhood(request);
-            $("nav").removeClass("close");
         } else {
-            if(viewModel.locations().length === 0) {
-                request = viewModel.generateSearchRequest();
-                viewModel.searchNeighborhood(request);
-            }
+            request = viewModel.generateSearchRequest();
+            viewModel.searchNeighborhood(request);
         }
+        $("nav").removeClass("close");
+        $("#location").addClass("close");
+    });
+
+    $("#location").hide();
+    viewModel.location.subscribe(function(location) {
+        if(location.place_id) {
+            $("#location").show();
+        } else {
+            $("#location").hide();
+        }
+    });
+
+    $("#menu-button").click(function(e) {
+        e.stopPropagation();
+        $("nav").toggleClass("close");
+    });
+
+    $("#location-button").click(function(e) {
+        e.stopPropagation();
+        if($("#location").hasClass("close")) {
+            viewModel.locationButtonIcon("chevron_left");
+        } else {
+            viewModel.locationButtonIcon("chevron_right");
+        }
+        $("#location").toggleClass("close");
     });
 
     ko.applyBindings(viewModel);

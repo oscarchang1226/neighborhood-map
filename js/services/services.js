@@ -11,13 +11,7 @@ define([
                 position: google.maps.ControlPosition.TOP_RIGHT
             }
         });
-
-        map.addListener("click", function(e) {
-            if(e.placeId) {
-                console.log("Hello");
-            }
-        });
-
+        
         return map;
     }
 

@@ -4,7 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Neighborhood Map</title>
-        <link  rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
         <link rel="stylesheet" href="css/index.css">
         <link rel="stylesheet" href="css/material-icons.css">
     </head>
@@ -23,11 +24,27 @@
             </button>
             <div id="ul-container">
                 <ul data-bind="foreach: locations">
-                    <li data-bind="text: name, click: $parent.locationClick"></li>
+                    <li data-bind="click: $parent.locationClick">
+                        <span data-bind="text: name"></span>
+                        <span class="sub" data-bind="text: vicinity"></span>
+                    </li>
                 </ul>
             </div>
         </nav>
-        <div id="backstage"></div>
+        <div id="location" class="close">
+            <button type="button" name="close" id="location-button">
+                <i class="material-icons md-18" data-bind="text: locationButtonIcon"></i>
+            </button>
+            <div data-bind="with: location">
+                <div class="header">
+                    <span data-bind="text: name"></span>
+                </div>
+                <a target="_blank" data-bind="attr: {href: $parent.getLocationUrl()}">
+                    <img alt="location image" data-bind="attr: {src: $parent.getPhoto()}"/>
+                </a>
+                <address data-bind="text: formatted_address"></address>
+            </div>
+        </div>
         <div id="map"></div>
         <script data-main="js/app" type="text/javascript" src="bower_components/requirejs/require.js"></script>
     </body>

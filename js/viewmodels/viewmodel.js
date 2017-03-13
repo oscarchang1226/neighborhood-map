@@ -16,9 +16,25 @@ define([
         vm.neighborhood = ko.observable();
         vm.userInput = ko.observable();
         vm.focusedMarker = ko.observable();
+        vm.location = ko.observable({name:"", formatted_address:""});
         vm.locations = ko.observableArray();
         vm.markers = ko.observableArray();
         vm.radius = ko.observable(2500);
+        vm.locationButtonIcon = ko.observable("chevron_right");
+
+        vm.getPhoto = ko.computed(function() {
+            if(vm.location() && vm.location().photos) {
+                return vm.location().photos[0].getUrl({maxWidth: 238, maxHeight: 180});
+            }
+            return "http://placehold.it/350x150";
+        });
+
+        vm.getLocationUrl = ko.computed(function() {
+            if(vm.location() && vm.location().url) {
+                return vm.location().url;
+            }
+            return "#";
+        });
 
         vm.checkPlaceStatus = checkPlaceStatus;
         vm.getPlaceDetails = getPlaceDetails;
@@ -28,6 +44,20 @@ define([
         vm.clearMarkers = clearMarkers;
         vm.recenter = recenter;
         vm.locationClick = locationClick;
+
+        vm.map.addListener("click", function(e) {
+            if(e.placeId) {
+                getPlaceDetails(e.placeId, mapLocationIconClick);
+            } else {
+                $("nav").addClass("close");
+                $("#location").addClass("close");
+            }
+        });
+
+        vm.map.addListener("dragstart", function(e) {
+            $("nav").addClass("close");
+            $("#location").addClass("close");
+        });
 
         function checkPlaceStatus(status) {
             return services.checkPlaceStatus(status);
@@ -70,6 +100,10 @@ define([
                             }
                         }
                     });
+                } else {
+                    if(vm.locations().length === 0) {
+                        vm.locations.push({name: "No results found.", vicinity:""});
+                    }
                 }
             });
         }
@@ -80,12 +114,14 @@ define([
             });
             vm.markers = ko.observableArray();
             $("nav").addClass("close");
+            $("#location").addClass("close");
         }
 
         function recenter() {
             vm.map.setCenter(vm.neighborhood().geometry.location);
             vm.map.setZoom(14);
             $("nav").addClass("close");
+            $("#location").addClass("close");
         }
 
         function locationClick(place, e) {
@@ -104,12 +140,23 @@ define([
             }
             vm.map.setCenter(place.geometry.location);
             vm.map.setZoom(17);
+            vm.location(place);
             $("nav").addClass("close");
         }
 
         function markerClick(place, status) {
             if(services.checkPlaceStatus(status)) {
-                console.log(place);
+                vm.location(place);
+                vm.locationButtonIcon("chevron_left");
+                $("#location").removeClass("close");
+            }
+        }
+
+        function mapLocationIconClick(place, status) {
+            if(services.checkPlaceStatus(status)) {
+                vm.location(place);
+                vm.locationButtonIcon("chevron_right");
+                $("#location").addClass("close");
             }
         }
 
