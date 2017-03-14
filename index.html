@@ -39,10 +39,20 @@
                 <div class="header">
                     <span data-bind="text: name"></span>
                 </div>
-                <a target="_blank" data-bind="attr: {href: $parent.getLocationUrl()}">
-                    <img alt="location image" data-bind="attr: {src: $parent.getPhoto()}"/>
+                <a target="_blank" class="image-container" data-bind="attr: {href: $parent.getLocationUrl()}">
+                    <img alt="location image" data-bind="attr: {src: $parent.imageUrl}"/>
                 </a>
-                <address data-bind="text: formatted_address"></address>
+                <div class="image-controls">
+                    <button type="button" name="previous" data-bind="click: $parent.previousPhoto">
+                        <i class="material-icons md-18">chevron_left</i>
+                    </button>
+                    <button type="button" name="next" data-bind="click: $parent.nextPhoto">
+                        <i class="material-icons md-18">chevron_right</i>
+                    </button>
+                </div>
+                <address data-bind="html: formatted_address"></address>
+                <span data-bind="text: international_phone_number"></span>
+                <span data-bind="text: $parent.getOpeningHours()"></span>
             </div>
         </div>
         <div id="map"></div>

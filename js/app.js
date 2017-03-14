@@ -37,6 +37,22 @@ require([
         $("#location").addClass("close");
     });
 
+    viewModel.location.subscribe(function() {
+        viewModel.location().imageIdx = ko.observable(0);
+        var location = viewModel.location();
+        if(!location.hasOwnProperty("international_phone_number")) {
+            location.international_phone_number = "";
+        }
+        if(location.hasOwnProperty("photos")) {
+            viewModel.imageUrl(location.photos[0].getUrl({maxWidth: 238, maxHeight: 180}));
+        } else {
+            viewModel.imageUrl("http://placehold.it/238x180");
+        }
+        location.imageIdx.subscribe(function(idx) {
+            viewModel.imageUrl(location.photos[idx].getUrl({maxWidth: 238, maxHeight: 180}));
+        });
+    });
+
     $("#location").hide();
     viewModel.location.subscribe(function(location) {
         if(location.place_id) {

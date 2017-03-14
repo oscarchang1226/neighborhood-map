@@ -149,9 +149,13 @@ nav #ul-container.active {
     box-shadow: 0px 1px 2px rgba(0, 0, 0, .2), 1px 0px 2px rgba(0,0,0,.2);
     transform: translate(0,0);
 }
-#location > div {
+#location > div:not(.image-controls) {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    padding-bottom: 4px;
+    height: 100%;
+    box-sizing: border-box;
 }
 #location .header {
     padding: 4px;
@@ -174,7 +178,29 @@ button#location-button {
     padding: 0;
     height: 32px;
 }
+#location a.image-container {
+    height: calc(400px / 2 - 20px);
+}
 #location img {
     width: 100%;
     height: calc(400px / 2 - 20px);
+}
+#location div.image-controls {
+    height: 24px;
+    display: flex;
+}
+#location div.image-controls button {
+    width: 50%;
+    border: none;
+    outline: none;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+}
+#location div.image-controls button:hover {
+    background-color: #FFCDD2;
+}
+#location > div address,
+#location > div > span {
+    font-size: 14px;
+    padding: 4px 8px;
 }

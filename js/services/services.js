@@ -11,7 +11,7 @@ define([
                 position: google.maps.ControlPosition.TOP_RIGHT
             }
         });
-        
+
         return map;
     }
 
@@ -51,12 +51,17 @@ define([
         return new google.maps.places.Autocomplete(ele);
     }
 
+    function getInfoWindow() {
+        return new google.maps.InfoWindow();
+    }
+
     return {
         initMap: initMap,
         initPlacesService: initPlacesService,
         addMarker: addMarker,
         checkPlaceStatus: checkPlaceStatus,
         drawCircle: drawCircle,
-        createAutocompelte: createAutocompelte
+        createAutocompelte: createAutocompelte,
+        getInfoWindow: getInfoWindow
     };
 });

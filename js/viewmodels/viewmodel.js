@@ -16,24 +16,33 @@ define([
         vm.neighborhood = ko.observable();
         vm.userInput = ko.observable();
         vm.focusedMarker = ko.observable();
-        vm.location = ko.observable({name:"", formatted_address:""});
+        vm.imageUrl = ko.observable("http://placehold.it/350x150");
+        vm.location = ko.observable({name:"", formatted_address:"", international_phone_number:""});
         vm.locations = ko.observableArray();
         vm.markers = ko.observableArray();
         vm.radius = ko.observable(2500);
         vm.locationButtonIcon = ko.observable("chevron_right");
 
-        vm.getPhoto = ko.computed(function() {
-            if(vm.location() && vm.location().photos) {
-                return vm.location().photos[0].getUrl({maxWidth: 238, maxHeight: 180});
-            }
-            return "http://placehold.it/350x150";
-        });
-
         vm.getLocationUrl = ko.computed(function() {
-            if(vm.location() && vm.location().url) {
+            if(vm.location() && vm.location().hasOwnProperty("url")) {
                 return vm.location().url;
             }
             return "#";
+        });
+
+        vm.getOpeningHours = ko.computed(function() {
+            if(vm.location() && vm.location().hasOwnProperty("opening_hours")) {
+                if(vm.location().opening_hours.open_now) {
+                    try {
+                        var day = new Date().getDay();
+                        return vm.location().opening_hours.weekday_text[day];
+                    } catch(e) {
+                    }
+                } else {
+                    return "Closed now.";
+                }
+            }
+            return "Opening hours not available.";
         });
 
         vm.checkPlaceStatus = checkPlaceStatus;
@@ -44,6 +53,8 @@ define([
         vm.clearMarkers = clearMarkers;
         vm.recenter = recenter;
         vm.locationClick = locationClick;
+        vm.nextPhoto = nextPhoto;
+        vm.previousPhoto = previousPhoto;
 
         vm.map.addListener("click", function(e) {
             if(e.placeId) {
@@ -51,12 +62,14 @@ define([
             } else {
                 $("nav").addClass("close");
                 $("#location").addClass("close");
+                vm.locationButtonIcon("chevron_right");
             }
         });
 
         vm.map.addListener("dragstart", function(e) {
             $("nav").addClass("close");
             $("#location").addClass("close");
+            vm.locationButtonIcon("chevron_right");
         });
 
         function checkPlaceStatus(status) {
@@ -94,9 +107,7 @@ define([
                         if(place.types.indexOf("political") < 0) {
                             vm.locations.push(place);
                             if(!checkIfMarkerExist(place.geometry.location)) {
-                                vm.markers().push(services.addMarker(place, vm.map, function() {
-                                    getPlaceDetails(place.place_id, markerClick);
-                                }));
+                                vm.markers().push(addMarker(place, vm.map));
                             }
                         }
                     });
@@ -115,6 +126,7 @@ define([
             vm.markers = ko.observableArray();
             $("nav").addClass("close");
             $("#location").addClass("close");
+            vm.locationButtonIcon("chevron_right");
         }
 
         function recenter() {
@@ -122,13 +134,12 @@ define([
             vm.map.setZoom(14);
             $("nav").addClass("close");
             $("#location").addClass("close");
+            vm.locationButtonIcon("chevron_right");
         }
 
         function locationClick(place, e) {
             if(!checkIfMarkerExist(place.geometry.location)) {
-                vm.focusedMarker = ko.observable(services.addMarker(place, vm.map, function() {
-                    getPlaceDetails(place.place_id, markerClick);
-                }));
+                vm.focusedMarker = ko.observable(addMarker(place, vm.map));
                 vm.markers().push(vm.focusedMarker());
             } else {
                 var placeMarker = vm.markers().filter(function(m) {
@@ -138,10 +149,14 @@ define([
                     vm.focusedMarker = ko.observable(placeMarker[0]);
                 }
             }
-            vm.map.setCenter(place.geometry.location);
-            vm.map.setZoom(17);
-            vm.location(place);
-            $("nav").addClass("close");
+            getPlaceDetails(place.place_id, function(placeDetails, status) {
+                if(services.checkPlaceStatus(status)) {
+                    vm.map.setCenter(placeDetails.geometry.location);
+                    vm.map.setZoom(17);
+                    vm.location(placeDetails);
+                    $("nav").addClass("close");
+                }
+            });
         }
 
         function markerClick(place, status) {
@@ -157,7 +172,16 @@ define([
                 vm.location(place);
                 vm.locationButtonIcon("chevron_right");
                 $("#location").addClass("close");
+                if(!checkIfMarkerExist(place.geometry.location)) {
+                    addMarker(place, vm.map);
+                }
             }
+        }
+
+        function addMarker(place, map) {
+            return services.addMarker(place, vm.map, function() {
+                getPlaceDetails(place.place_id, markerClick);
+            });
         }
 
         function checkIfMarkerExist(location) {
@@ -168,6 +192,28 @@ define([
             return temp.length > 0;
         }
 
+        function nextPhoto() {
+            if(vm.location() && vm.location().hasOwnProperty("photos") && vm.location().hasOwnProperty("imageIdx")) {
+                var l = vm.location().photos.length;
+                var i = vm.location().imageIdx();
+                if(i < (l-1)) {
+                    vm.location().imageIdx(i+1);
+                } else {
+                    vm.location().imageIdx(0);
+                }
+            }
+        }
+
+        function previousPhoto() {
+            if(vm.location() && vm.location().hasOwnProperty("photos") && vm.location().hasOwnProperty("imageIdx")) {
+                var i = vm.location().imageIdx();
+                if(i > 0) {
+                    vm.location().imageIdx(i-1);
+                } else {
+                    vm.location().imageIdx(vm.location().photos.length - 1);
+                }
+            }
+        }
     }
 
     return ViewModel;
