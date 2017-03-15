@@ -1,21 +1,24 @@
 define([
     "knockout",
     "models/models",
-    "services/services",
+    "services/googlemap.service",
+    "services/broadbandmap.service",
     "jquery"
-], function(ko, models, services, $) {
+], function(ko, models, google, bbm, $) {
     "use strict";
 
     function ViewModel() {
         var vm = this;
 
-        vm.map = services.initMap();
-        vm.placesService = services.initPlacesService(vm.map);
+        vm.map = google.initMap();
+        vm.placesService = google.initPlacesService(vm.map);
         vm.pagination = null;
 
-        vm.neighborhood = ko.observable();
+        vm.neighborhood = ko.observable({});
         vm.userInput = ko.observable();
         vm.focusedMarker = ko.observable({});
+        vm.bbmHeaders = ko.observable({});
+        vm.demographics = ko.observable({});
         vm.imageUrl = ko.observable("http://placehold.it/350x150");
         vm.location = ko.observable({name:"", formatted_address:"", international_phone_number:""});
         vm.locations = ko.observableArray();
@@ -56,6 +59,8 @@ define([
         vm.nextPhoto = nextPhoto;
         vm.previousPhoto = previousPhoto;
         vm.toggleMarkerBounce = toggleMarkerBounce;
+        vm.getDemographics = getDemographics;
+        vm.getDemographicsInfo = getDemographicsInfo;
 
         vm.map.addListener("click", function(e) {
             if(e.placeId) {
@@ -73,7 +78,7 @@ define([
         });
 
         function checkPlaceStatus(status) {
-            return services.checkPlaceStatus(status);
+            return google.checkPlaceStatus(status);
         }
 
         function getPlaceDetails(placeId, callback) {
@@ -100,7 +105,7 @@ define([
             // request.bounds = vm.neighborhood().geometry.viewport;
             vm.locations.removeAll();
             vm.placesService.nearbySearch(request, function(result, status, pagination) {
-                if(services.checkPlaceStatus(status)) {
+                if(google.checkPlaceStatus(status)) {
                     vm.pagination = pagination;
                     result.forEach(function(place) {
                         if(place.types.indexOf("political") < 0) {
@@ -146,7 +151,7 @@ define([
                 }
             }
             getPlaceDetails(place.place_id, function(placeDetails, status) {
-                if(services.checkPlaceStatus(status)) {
+                if(google.checkPlaceStatus(status)) {
                     vm.map.panTo(placeDetails.geometry.location);
                     vm.map.setZoom(17);
                     vm.location(placeDetails);
@@ -157,7 +162,7 @@ define([
         }
 
         function markerClick(place, status) {
-            if(services.checkPlaceStatus(status)) {
+            if(google.checkPlaceStatus(status)) {
                 vm.location(place);
                 vm.map.panTo(place.geometry.location);
                 vm.map.setZoom(17);
@@ -175,7 +180,7 @@ define([
         }
 
         function mapLocationIconClick(place, status) {
-            if(services.checkPlaceStatus(status)) {
+            if(google.checkPlaceStatus(status)) {
                 clearMarkers();
                 vm.location(place);
                 vm.map.panTo(place.geometry.location);
@@ -186,7 +191,7 @@ define([
         }
 
         function addMarker(place, map) {
-            var marker = services.addMarker(place, vm.map, function() {
+            var marker = google.addMarker(place, vm.map, function() {
                 getPlaceDetails(place.place_id, markerClick);
             });
             vm.markers().push(marker);
@@ -236,8 +241,58 @@ define([
 
         function toggleMarkerBounce(marker) {
             if(marker.hasOwnProperty("animation") && marker.getAnimation() === null) {
-                marker.setAnimation(services.getAnimation().BOUNCE);
+                marker.setAnimation(google.getAnimation().BOUNCE);
             }
+        }
+
+        function setBbmHeaders(res, status) {
+            vm.bbmHeaders(res.Results);
+        }
+
+        function errSetBbmHeaders(res, status) {
+            console.error("Unable to get BroadbandMap headers");
+        }
+
+        function getBbmHeaders() {
+            if(Object.keys(vm.bbmHeaders()).length === 0) {
+                bbm.getHeaders(setBbmHeaders, errSetBbmHeaders);
+            }
+        }
+
+        function getDemographics() {
+            if(vm.neighborhood().hasOwnProperty("geometry")) {
+                var request = {
+                    latitude: vm.neighborhood().geometry.location.lat(),
+                    longitude: vm.neighborhood().geometry.location.lng(),
+                    format: "json"
+                };
+                getBbmHeaders();
+                bbm.getDemographics(request, setDemographics, errSetDemographics);
+            }
+        }
+
+        function setDemographics(res, status) {
+            if(status == "success") {
+                if(res.hasOwnProperty("Results")) {
+                    vm.demographics(res.Results);
+                } else {
+                    vm.demographics({});
+                }
+            }
+        }
+
+        function errSetDemographics(res, status) {
+            console.error("Unable to get BroadbandMap demographics data");
+        }
+
+        function getDemographicsInfo(key) {
+            return ko.computed(function() {
+                if(vm.demographics().hasOwnProperty(key)) {
+                    return vm.demographics()[key];
+                } else {
+                    return "";
+                }
+            });
         }
 
     }

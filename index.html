@@ -24,6 +24,9 @@
             <button type="button" name="recenter" id="recenter-button" data-bind="click: recenter" title="Recenter">
                 <i class="material-icons md-18">my_location</i>
             </button>
+            <button type="button" name="demographics" id="demographics-button" title="Demographics">
+                <i class="material-icons md-18">poll</i>
+            </button>
             <div id="ul-container">
                 <ul data-bind="foreach: locations">
                     <li data-bind="click: $parent.locationClick">
@@ -56,6 +59,58 @@
                 <span data-bind="text: international_phone_number"></span>
                 <span data-bind="text: $parent.getOpeningHours()"></span>
                 <a class="link" target="_blank" data-bind="attr: {href: $parent.getLocationUrl()}">View on Google Maps</a>
+            </div>
+        </div>
+        <div id="demographics" class="close">
+            <div class="content">
+                <div class="container">
+                    <div class="header">
+                        <i class="material-icons md-18">attach_money</i>
+                        <span>Income &#37;</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <td>&lt; 25</td>
+                            <td data-bind="text: getDemographicsInfo('incomeLessThan25')"></td>
+                        </tr>
+                        <tr>
+                            <td>25~50</td>
+                            <td data-bind="text: getDemographicsInfo('incomeBetween25to50')"></td>
+                        </tr>
+                        <tr>
+                            <td>50~100</td>
+                            <td data-bind="text: getDemographicsInfo('incomeBetween50to100')"></td>
+                        </tr>
+                        <tr>
+                            <td>100~200</td>
+                            <td data-bind="text: getDemographicsInfo('incomeBetween100to200')"></td>
+                        </tr>
+                        <tr>
+                            <td>&gt; 200</td>
+                            <td data-bind="text: getDemographicsInfo('incomeGreater200')"></td>
+                        </tr>
+                        <tr>
+                            <td>Median</td>
+                            <td data-bind="text: getDemographicsInfo('medianIncome')"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="container">
+                    <div class="header">
+                        <i class="material-icons md-18">school</i>
+                        <span>Education &#37;</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <td>&le; Bachelor</td>
+                            <td data-bind="text: getDemographicsInfo('educationBachelorOrGreater')"></td>
+                        </tr>
+                        <tr>
+                            <td>&le; High School</td>
+                            <td data-bind="text: getDemographicsInfo('educationHighSchoolGraduate')"></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
         <div id="map"></div>

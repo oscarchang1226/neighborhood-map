@@ -93,6 +93,12 @@ require([
         $("#location").toggleClass("close");
     });
 
+    $("#demographics-button").click(function(e) {
+        e.stopPropagation();
+        viewModel.getDemographics();
+        $("#demographics").toggleClass("close");
+    });
+
     ko.applyBindings(viewModel);
 
 }, function(err) {

@@ -4,3 +4,7 @@ nav input[type="text"] {
 div#ul-container {
     width: calc(100% - 191px);
 }
+#demographics {
+    width: 450px;
+    right: 0;
+}
