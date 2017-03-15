@@ -23,6 +23,7 @@ define([
     function addMarker(place, map, callback) {
         var marker = new google.maps.Marker({
             map:map,
+            animation: google.maps.Animation.DROP,
             position: place.geometry.location
         });
         google.maps.event.addListener(marker, "click", callback);
@@ -47,6 +48,10 @@ define([
         return circle;
     }
 
+    function getAnimation() {
+        return google.maps.Animation;
+    }
+
     function createAutocompelte(ele) {
         return new google.maps.places.Autocomplete(ele);
     }
@@ -62,6 +67,7 @@ define([
         checkPlaceStatus: checkPlaceStatus,
         drawCircle: drawCircle,
         createAutocompelte: createAutocompelte,
-        getInfoWindow: getInfoWindow
+        getInfoWindow: getInfoWindow,
+        getAnimation: getAnimation
     };
 });

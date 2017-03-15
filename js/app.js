@@ -46,11 +46,27 @@ require([
         if(location.hasOwnProperty("photos")) {
             viewModel.imageUrl(location.photos[0].getUrl({maxWidth: 238, maxHeight: 180}));
         } else {
-            viewModel.imageUrl("http://placehold.it/238x180");
+            if(location.hasOwnProperty("place_id")) {
+                var url = `https://maps.googleapis.com/maps/api/streetview?size=238x180&location=`;
+                url += `${location.geometry.location.lat()},${location.geometry.location.lng()}&key=AIzaSyCzrC2FBXXLfmnizhDmCHRVMaG6JQlvbvw`;
+                viewModel.imageUrl(url);
+            } else {
+                viewModel.imageUrl("http://placehold.it/238x180");
+            }
         }
         location.imageIdx.subscribe(function(idx) {
             viewModel.imageUrl(location.photos[idx].getUrl({maxWidth: 238, maxHeight: 180}));
         });
+    });
+
+    viewModel.focusedMarker.subscribe(function(previousMarker) {
+        if(previousMarker.hasOwnProperty("animation") && previousMarker.getAnimation() !== null) {
+            previousMarker.setAnimation(null);
+        }
+    }, null, "beforeChange");
+
+    viewModel.focusedMarker.subscribe(function(marker) {
+        viewModel.toggleMarkerBounce(marker);
     });
 
     $("#location").hide();
@@ -79,5 +95,6 @@ require([
 
     ko.applyBindings(viewModel);
 
-
+}, function(err) {
+    console.error("Unable to load dependencies.", err);
 });

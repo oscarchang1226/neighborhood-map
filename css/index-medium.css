@@ -1,0 +1,6 @@
+nav input[type="text"] {
+    width: calc(100% - 250px);
+}
+div#ul-container {
+    width: calc(100% - 191px);
+}
