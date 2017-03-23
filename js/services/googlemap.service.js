@@ -3,7 +3,7 @@ define([
 ], function() {
     "use strict";
 
-    function initMap() {
+    function initMap(eventListeners) {
         var map = new google.maps.Map(document.getElementById("map"), {
             zoom: 14,
             draggable: true,
@@ -11,6 +11,10 @@ define([
                 position: google.maps.ControlPosition.TOP_RIGHT
             }
         });
+
+        for(var e in eventListeners) {
+            map.addListener(e, eventListeners[e]);
+        }
 
         return map;
     }

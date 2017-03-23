@@ -10,7 +10,10 @@ define([
     function ViewModel() {
         var vm = this;
 
-        vm.map = google.initMap();
+        vm.map = google.initMap({
+            "click": mapClickEvent,
+            "dragstart": mapDragStartEvent
+        });
         vm.placesService = google.initPlacesService(vm.map);
         vm.pagination = null;
 
@@ -37,7 +40,8 @@ define([
             if(vm.location() && vm.location().hasOwnProperty("opening_hours")) {
                 if(vm.location().opening_hours.open_now) {
                     try {
-                        var day = new Date().getDay();
+                        var day = new Date().getDay() - 1;
+                        day = day == -1? 6 : day;
                         return vm.location().opening_hours.weekday_text[day];
                     } catch(e) {
                     }
@@ -62,7 +66,7 @@ define([
         vm.getDemographics = getDemographics;
         vm.getDemographicsInfo = getDemographicsInfo;
 
-        vm.map.addListener("click", function(e) {
+        function mapClickEvent(e) {
             if(e.placeId) {
                 e.stop(); // prevents default info window from showing
                 getPlaceDetails(e.placeId, mapLocationIconClick);
@@ -70,12 +74,12 @@ define([
                 $("nav").addClass("close");
                 closeLocationPanel();
             }
-        });
+        }
 
-        vm.map.addListener("dragstart", function(e) {
+        function mapDragStartEvent(e) {
             $("nav").addClass("close");
             closeLocationPanel();
-        });
+        }
 
         function checkPlaceStatus(status) {
             return google.checkPlaceStatus(status);
@@ -103,7 +107,6 @@ define([
 
         function searchNeighborhood(request) {
             // request.bounds = vm.neighborhood().geometry.viewport;
-            vm.locations.removeAll();
             vm.placesService.nearbySearch(request, function(result, status, pagination) {
                 if(google.checkPlaceStatus(status)) {
                     vm.pagination = pagination;
@@ -115,10 +118,6 @@ define([
                             }
                         }
                     });
-                } else {
-                    if(vm.locations().length === 0) {
-                        vm.locations.push({name: "No results found.", vicinity:""});
-                    }
                 }
             });
         }
@@ -153,8 +152,9 @@ define([
             getPlaceDetails(place.place_id, function(placeDetails, status) {
                 if(google.checkPlaceStatus(status)) {
                     vm.map.panTo(placeDetails.geometry.location);
-                    vm.map.setZoom(17);
-                    vm.location(placeDetails);
+                    if(vm.map.getZoom() < 17) {
+                        vm.map.setZoom(17);
+                    }                    vm.location(placeDetails);
                     $("nav").addClass("close");
                     openLocationPanel();
                 }
@@ -165,7 +165,9 @@ define([
             if(google.checkPlaceStatus(status)) {
                 vm.location(place);
                 vm.map.panTo(place.geometry.location);
-                vm.map.setZoom(17);
+                if(vm.map.getZoom() < 17) {
+                    vm.map.setZoom(17);
+                }
                 var markers = vm.markers().filter(function(marker) {
                     return marker.position.lat() == place.geometry.location.lat() &&
                         marker.position.lng() == place.geometry.location.lng();
@@ -184,7 +186,9 @@ define([
                 clearMarkers();
                 vm.location(place);
                 vm.map.panTo(place.geometry.location);
-                vm.map.setZoom(17);
+                if(vm.map.getZoom() < 17) {
+                    vm.map.setZoom(17);
+                }
                 vm.focusedMarker(addMarker(place, vm.map));
                 openLocationPanel();
             }

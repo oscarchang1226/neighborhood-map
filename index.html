@@ -28,12 +28,21 @@
                 <i class="material-icons md-18">poll</i>
             </button>
             <div id="ul-container">
+                <!-- ko if: locations().length > 0 -->
                 <ul data-bind="foreach: locations">
                     <li data-bind="click: $parent.locationClick">
                         <span data-bind="text: name"></span>
                         <span class="sub" data-bind="text: vicinity"></span>
                     </li>
                 </ul>
+                <!-- /ko -->
+                <!-- ko if: locations().length == 0 -->
+                <ul>
+                    <li>
+                        <span>No results found.</span>
+                    </li>
+                </ul>
+                <!-- /ko -->
             </div>
         </nav>
         <div id="location" class="close">

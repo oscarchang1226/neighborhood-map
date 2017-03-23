@@ -26,6 +26,8 @@ require([
 
     viewModel.userInput.subscribe(function(userInput) {
         var request;
+        viewModel.locations.removeAll();
+        viewModel.clearMarkers();
         if(userInput && userInput.length > 2) {
             request = viewModel.generateSearchRequest(true);
             viewModel.searchNeighborhood(request);
