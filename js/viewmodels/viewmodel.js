@@ -1,10 +1,9 @@
 define([
     "knockout",
-    "models/models",
     "services/googlemap.service",
     "services/broadbandmap.service",
     "jquery"
-], function(ko, models, google, bbm, $) {
+], function(ko, google, bbm, $) {
     "use strict";
 
     function ViewModel() {
