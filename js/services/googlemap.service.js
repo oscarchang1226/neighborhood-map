@@ -1,10 +1,12 @@
 define([
-    "googlemaps"
-], function() {
-    "use strict";
+    'async!http://maps.googleapis.com/maps/api/js?key=AIzaSyCzrC2FBXXLfmnizhDmCHRVMaG6JQlvbvw'
+], function(google) {
+    'use strict';
+
+    console.log(google);
 
     function initMap(eventListeners) {
-        var map = new google.maps.Map(document.getElementById("map"), {
+        var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
             draggable: true,
             mapTypeControlOptions: {
@@ -12,11 +14,11 @@ define([
             }
         });
 
-        for(var e in eventListeners) {
-            map.addListener(e, eventListeners[e]);
-        }
+        // for(var e in eventListeners) {
+        //     map.addListener(e, eventListeners[e]);
+        // }
 
-        return map;
+        // return map;
     }
 
     function initPlacesService(map) {
@@ -30,7 +32,7 @@ define([
             animation: google.maps.Animation.DROP,
             position: place.geometry.location
         });
-        google.maps.event.addListener(marker, "click", callback);
+        google.maps.event.addListener(marker, 'click', callback);
         return marker;
     }
 
@@ -40,10 +42,10 @@ define([
 
     function drawCircle(location, map, radius) {
         var circle = new google.maps.Circle({
-            strokeColor: "FF0000",
+            strokeColor: 'FF0000',
             strokeOpacity: 0.8,
             strokeWeight: 2,
-            fillColor: "FF0000",
+            fillColor: 'FF0000',
             fillOpacity: 0.35,
             map: map,
             center: location,
