@@ -1,18 +1,15 @@
-require.config({
+requirejs.config({
     paths: {
-        knockout: '../bower_components/knockout/dist/knockout',
-        async: '../bower_components/requirejs-plugins/src/async'
+        'knockout': '../bower_components/knockout/dist/knockout',
+        'googlemap': 'app/googlemap',
+        'async': '../bower_components/requirejs-plugins/src/async'
     }
 });
 
-require([
+requirejs([
     'knockout',
-    'viewmodels/viewmodel'
-], function(ko) {
-    'use strict';
+    'googlemap'
+], function(ko, g) {
 
-    var NEIGHBORHOOD_ID = 'ChIJGZudLZ3FQIYREC4v5KoYUlg';
-
-}, function(err) {
-    console.error('Unable to load dependencies.', err);
+    g.initMap();
 });
