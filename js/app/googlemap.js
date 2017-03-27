@@ -2,15 +2,13 @@ define([
     'async!https://maps.googleapis.com/maps/api/js?key=AIzaSyCzrC2FBXXLfmnizhDmCHRVMaG6JQlvbvw'
 ], function() {
 
-    initMap();
-
     var map;
 
     function initMap() {
-        var uluru = {lat: -25.363, lng: 131.044};
+        var springShadows = {lat: 29.8179022, lng: -95.53548160000001};
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 4,
-            center: uluru
+            zoom: 13,
+            center: springShadows
         });
     }
 
