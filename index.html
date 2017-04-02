@@ -14,6 +14,13 @@
     <body>
 
         <div id="map"></div>
+
+        <div id="location-list" data-bind="foreach: locations">
+            <div class="location-container" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation}">
+                <span data-bind="text: name"></span>
+            </div>
+        </div>
+
         <script data-main="js/main" type="text/javascript" src="bower_components/requirejs-plugins/lib/require.js"></script>
     </body>
 </html>

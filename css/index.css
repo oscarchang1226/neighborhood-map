@@ -9,3 +9,18 @@ body {
     width: 100%;
     height: 100%;
 }
+#location-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    margin-left: 8px;
+    margin-top: 48px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0px 1px 3px rgba(0,0,0,.4);
+    max-height: calc(100vh - 48px);
+}
+.location-container {
+    padding: 8px 4px;
+}
