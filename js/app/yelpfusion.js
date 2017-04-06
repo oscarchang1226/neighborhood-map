@@ -13,7 +13,7 @@ define([
     function getReviews(q) {
         return $.ajax({
             method: 'GET',
-            url: '/yelp/business'+q+'/reviews'
+            url: '/yelp/business/'+q+'/reviews'
         });
     }
 

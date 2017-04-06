@@ -19,8 +19,21 @@ body {
     background-color: #fff;
     border-radius: 4px;
     box-shadow: 0px 1px 3px rgba(0,0,0,.4);
-    max-height: calc(100vh - 48px);
+    max-height: calc(100vh - 80px);
+    max-width: calc(100% - 33px);
+    overflow: hidden;
 }
-.location-container {
+#location-list-container {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.location {
     padding: 8px 4px;
+}
+.location:hover {
+    background-color: cornflowerblue;
+}
+.location.focused {
+    background-color: cornflowerblue;
 }

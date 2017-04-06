@@ -15,9 +15,13 @@
 
         <div id="map"></div>
 
-        <div id="location-list" data-bind="foreach: locations">
-            <div class="location-container" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation}">
-                <span data-bind="text: name"></span>
+        <div id="location-list">
+            <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
+                <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
+                    click: $parent.clickLocation, css: {focused: id == $parent.focusedLocation().id}">
+                    <span data-bind="text: name"></span>
+                    <!-- <span data-bind="text: $parent.checkFocused()"></span> -->
+                </div>
             </div>
         </div>
 

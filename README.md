@@ -8,3 +8,6 @@ Single page application featuring a map of a neighborhood with additional functi
 4. Change working directory to repository.
 5. Execute `npm start` in terminal. (Make sure you have `npm` installed. It comes together with `node` installation.)
 6. Open a web browser and navigate to https://localhost:1226.
+
+## Sources
+- [Virtual Scrolling](http://stackoverflow.com/questions/17748448/knockout-virtual-scrolling-binding)

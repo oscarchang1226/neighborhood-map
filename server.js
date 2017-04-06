@@ -29,6 +29,17 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
+app.get('/google/nearbySearch', function(req, res) {
+    console.log(req.query);
+    gClient.placesNearby(req.query, function(err, response) {
+        if(err) {
+            res.status(response.status).json(response.json);
+        } else {
+            res.json(response.json);
+        }
+    });
+});
+
 app.get('/google/placeDetails/:placeId', function(req, res) {
     gClient.place({placeid:req.params.placeId}, function(err, response) {
         if(err) {
@@ -40,11 +51,12 @@ app.get('/google/placeDetails/:placeId', function(req, res) {
 });
 
 app.get('/yelp/search', function(req, res) {
-    if(!req.query.hasOwnProperty('latitude') || !req.query.hasOwnProperty('longitude')) {
-        req.query.latitude = 29.8179022;
-        req.query.longitude = -95.53548160000001;
-    }
-    req.query.radius = req.query.radius || 3200;
+    // if(!req.query.hasOwnProperty('latitude') || !req.query.hasOwnProperty('longitude')) {
+    //     req.query.latitude = 29.8179022;
+    //     req.query.longitude = -95.53548160000001;
+    // }
+    req.query.location = 'spring shadows';
+    req.query.radius = req.query.radius || 800;
 
     yClient.search(req.query).then(function(response) {
         res.json(response.jsonBody);

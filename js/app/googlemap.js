@@ -5,15 +5,21 @@ define([
 
     var map;
     var marker;
+    var focused;
     var bounds;
 
     return {
         initMap: initMap,
         panMap: panMap,
         getDetails: getDetails,
+        nearbySearch: nearbySearch,
         createMarker: createMarker,
         removeMarker: removeMarker,
-        extendBounds: extendBounds
+        extendBounds: extendBounds,
+        panMarker: panMarker,
+        createFocused: createFocused,
+        removeFocused: removeFocused,
+        panFocused: panFocused
     };
 
     function initMap(events) {
@@ -47,12 +53,21 @@ define([
         });
     }
 
-    function createMarker(latLng, events) {
-        marker = new google.maps.Marker({
+    function nearbySearch(q) {
+        return $.ajax({
+            method: 'GET',
+            url: '/google/nearbySearch',
+            data: q
+        });
+    }
+
+    function createMarker(latLng, events, options) {
+        options = Object.assign({
             map:map,
             animation: google.maps.Animation.BOUNCE,
             position: latLng
-        });
+        }, options || {});
+        marker = new google.maps.Marker(options);
 
         for(var action in events) {
             marker.addListener(action, events[action]);
@@ -75,6 +90,47 @@ define([
             bounds.union(new google.maps.LatLngBounds(latLng));
         });
         map.fitBounds(bounds);
+    }
+
+    function panMarker(latLng) {
+        if(!marker) {
+            createMarker(latLng);
+        } else {
+            if(!marker.getMap()) {
+                marker.setMap(map);
+            }
+            marker.setPosition(latLng);
+        }
+    }
+
+    function createFocused(latLng, events, options) {
+        options = Object.assign({
+            map:map,
+            position: latLng,
+            icon: 'http://maps.google.com/mapfiles/ms/micons/blue-dot.png'
+        }, options || {});
+        focused = new google.maps.Marker(options);
+
+        for(var action in events) {
+            focused.addListener(action, events[action]);
+        }
+    }
+
+    function removeFocused() {
+        if(focused) {
+            focused.setMap(null);
+        }
+    }
+
+    function panFocused(latLng) {
+        if(!focused) {
+            createFocused(latLng);
+        } else {
+            if(!focused.getMap()) {
+                focused.setMap(map);
+            }
+            focused.setPosition(latLng);
+        }
     }
 
 });
