@@ -30,8 +30,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/google/nearbySearch', function(req, res) {
-    console.log(req.query);
-    gClient.placesNearby(req.query, function(err, response) {
+    if(!req.query.location) {
+        res.status(400).json({error: 'location query is required'});
+    }
+    var params = {
+        location: req.query.location,
+        radius: 500,
+        keyword: req.query.keyword || null
+    };
+    gClient.placesNearby(params, function(err, response) {
         if(err) {
             res.status(response.status).json(response.json);
         } else {

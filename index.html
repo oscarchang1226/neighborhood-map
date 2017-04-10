@@ -14,8 +14,19 @@
     <body>
 
         <div id="map"></div>
-
-        <div id="location-list">
+        <div id="filters" data-bind="css: {close: closeMenu}">
+            <select data-bind="options: optionsFilters,
+                                optionsText: 'label',
+                                value= selectedFilter,
+                                optionsCaption: 'Filters'">
+            </select>
+            <input type="text" placeholder="Search Here" data-bind="textInput: keyword">
+            <button type="button" name="menu-button"
+                data-bind="click: toggleMenu">
+                <i class="material-icons">menu</i>
+            </button>
+        </div>
+        <div id="location-list" data-bind="css: {close: closeMenu}">
             <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
                 <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
                     click: $parent.clickLocation, css: {focused: id == $parent.focusedLocation().id}">
