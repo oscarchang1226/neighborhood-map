@@ -29,13 +29,6 @@ define([
         var vm = this;
         vm.locations = ko.observableArray();
         vm.total = ko.observable(0);
-        y.search({limit: 30}).done(function(data) {
-            vm.total(data.total);
-            g.extendBounds(data.businesses.map(function(b) {
-                vm.locations.push(b);
-                return b.coordinates;
-            }));
-        });
 
         vm.focusedLocation = ko.observable({id:0});
         vm.closeMenu = ko.observable(true);
@@ -54,11 +47,15 @@ define([
         vm.selectedFilter = ko.observable({});
         vm.keyword = ko.observable('');
 
+        search();
+
         vm.mouseOverLocation = mouseOverLocation;
         vm.mouseOutLocation = mouseOutLocation;
         vm.clickLocation = clickLocation;
         vm.scrollLocation = scrollLocation;
         vm.toggleMenu = toggleMenu;
+        vm.clearLocations = clearLocations;
+        vm.search = search;
 
         function mouseOverLocation(obj) {
             g.panMarker({
@@ -101,20 +98,48 @@ define([
             if(!vm.fetching && vm.total() > vm.locations().length) {
                 ele = e.target;
                 if((ele.scrollTop + ele.offsetHeight) > (ele.scrollHeight - 100)) {
-                    vm.fetching = true;
-                    y.search({limit: 30, offset: vm.locations().length}).done(function(data) {
-                        g.extendBounds(data.businesses.map(function(b) {
-                            vm.locations.push(b);
-                            return b.coordinates;
-                        }));
-                        vm.fetching = false;
-                    });
+                    search();
                 }
             }
         }
 
         function toggleMenu() {
             vm.closeMenu(!vm.closeMenu());
+        }
+
+        function generateParameters() {
+            var params = {
+                limit: 30,
+                offset: vm.locations().length
+            };
+            if(vm.selectedFilter()) {
+                params.categories = vm.selectedFilter().value;
+            }
+            if(vm.keyword() && vm.keyword().trim().length > 3) {
+                params.term = vm.keyword();
+            }
+            return params;
+        }
+
+        function clearLocations() {
+            vm.locations.removeAll();
+        }
+
+        function search(params) {
+            if(!params) {
+                params = generateParameters();
+            }
+            if(!vm.fetching) {
+                vm.fetching = true;
+                y.search(params).done(function(data) {
+                    vm.total(data.total);
+                    g.extendBounds(data.businesses.map(function(b) {
+                        vm.locations.push(b);
+                        return b.coordinates;
+                    }));
+                    vm.fetching = false;
+                });
+            }
         }
     }
 

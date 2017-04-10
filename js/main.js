@@ -18,7 +18,13 @@ requirejs([
     var v = new ViewModel();
 
     v.selectedFilter.subscribe(function(filter) {
-        console.log(filter);
+        v.clearLocations();
+        v.search();
+    });
+
+    v.keyword.subscribe(function(keyword) {
+        v.clearLocations();
+        v.search();
     });
 
     ko.applyBindings(v);
