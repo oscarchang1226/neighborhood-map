@@ -19,7 +19,8 @@ define([
         panMarker: panMarker,
         createFocused: createFocused,
         removeFocused: removeFocused,
-        panFocused: panFocused
+        panFocused: panFocused,
+        recenter: recenter
     };
 
     function initMap(events) {
@@ -122,14 +123,20 @@ define([
         }
     }
 
-    function panFocused(latLng) {
+    function panFocused(latLng, events) {
         if(!focused) {
-            createFocused(latLng);
+            createFocused(latLng, events);
         } else {
             if(!focused.getMap()) {
                 focused.setMap(map);
             }
             focused.setPosition(latLng);
+        }
+    }
+
+    function recenter() {
+        if(map) {
+            map.panTo({lat: 29.8179022, lng: -95.53548160000001});
         }
     }
 

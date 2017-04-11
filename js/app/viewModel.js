@@ -10,18 +10,18 @@ define([
     function ViewModel() {
         var mapEvents = {
             click: function(e) {
-                if(e.placeId) {
-                    e.stop();
-                    g.removeMarker();
-                    g.getDetails(e.placeId).done(function(data) {
-                        if(data.status == 'OK') {
-                            g.panMap(data.result.geometry.location);
-                            g.createMarker(data.result.geometry.location);
-                        } else {
-                            window.alert('Something went wrong. Unable to retrieve place details.');
-                        }
-                    });
-                }
+                // if(e.placeId) {
+                //     e.stop();
+                //     g.removeMarker();
+                //     g.getDetails(e.placeId).done(function(data) {
+                //         if(data.status == 'OK') {
+                //             g.panMap(data.result.geometry.location);
+                //             g.createMarker(data.result.geometry.location);
+                //         } else {
+                //             window.alert('Something went wrong. Unable to retrieve place details.');
+                //         }
+                //     });
+                // }
             }
         };
         g.initMap(mapEvents);
@@ -29,8 +29,20 @@ define([
         var vm = this;
         vm.locations = ko.observableArray();
         vm.total = ko.observable(0);
-
-        vm.focusedLocation = ko.observable({id:0});
+        vm.showInfo = ko.observable(false);
+        vm.focusedLocation = ko.observable({
+            id:0,
+            name: '',
+            rating: '',
+            price: '',
+            display_phone: '',
+            image_url: '',
+            location: {
+                display_address: []
+            },
+            reviews: [],
+            url: ''
+        });
         vm.closeMenu = ko.observable(true);
         vm.checkFocused = ko.pureComputed(function(data){
             return vm.focusedLocation()? vm.focusedLocation().id == data.id : false;
@@ -56,6 +68,10 @@ define([
         vm.toggleMenu = toggleMenu;
         vm.clearLocations = clearLocations;
         vm.search = search;
+        vm.hideInfo = hideInfo;
+        vm.getStarRatings = getStarRatings;
+        vm.clearFocused = clearFocused;
+        vm.recenter = g.recenter;
 
         function mouseOverLocation(obj) {
             g.panMarker({
@@ -70,6 +86,7 @@ define([
 
         function clickLocation(obj) {
             if(vm.focusedLocation() && vm.focusedLocation().id == obj.id) {
+                vm.showInfo(true);
                 return;
             }
             g.nearbySearch({
@@ -87,9 +104,17 @@ define([
                         });
                         latLng = temp? temp.geometry.location : latLng;
                     }
-                    g.panFocused(latLng);
+                    g.panFocused(latLng, {click: function(){
+                        vm.closeMenu(false);
+                        vm.showInfo(true);
+                    }});
                     g.panMap(latLng);
+                    if(!obj.price) {
+                        obj.price = '';
+                    }
+                    obj.reviews = data.reviews;
                     vm.focusedLocation(obj);
+                    vm.showInfo(true);
                 });
             });
         }
@@ -140,6 +165,40 @@ define([
                     vm.fetching = false;
                 });
             }
+        }
+
+        function hideInfo() {
+            vm.showInfo(false);
+        }
+
+        function getStarRatings(rating) {
+            var s = '';
+            while(rating >= 1) {
+                s += '<i class="material-icons">star</i>';
+                rating -= 1;
+            }
+            if(rating >= 0.5) {
+                s += '<i class="material-icons">star_half</i>';
+            }
+            return s;
+        }
+
+        function clearFocused() {
+            g.removeFocused();
+            hideInfo();
+            vm.focusedLocation({
+                id:0,
+                name: '',
+                rating: '',
+                price: '',
+                display_phone: '',
+                image_url: '',
+                location: {
+                    display_address: []
+                },
+                reviews: [],
+                url: ''
+            });
         }
     }
 

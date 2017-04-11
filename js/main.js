@@ -18,11 +18,13 @@ requirejs([
     var v = new ViewModel();
 
     v.selectedFilter.subscribe(function(filter) {
+        v.clearFocused();
         v.clearLocations();
         v.search();
     });
 
     v.keyword.subscribe(function(keyword) {
+        v.clearFocused();
         v.clearLocations();
         v.search();
     });

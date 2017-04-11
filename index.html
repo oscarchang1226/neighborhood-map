@@ -14,24 +14,72 @@
     <body>
 
         <div id="map"></div>
+        <button type="button" aria-label="recenter" id="recenter-button" data-bind="click: recenter">
+            <i class="material-icons">my_location</i>
+        </button>
         <div id="filters" data-bind="css: {close: closeMenu}">
             <select data-bind="options: optionsFilters,
                                 optionsText: 'label',
                                 value: selectedFilter,
                                 optionsCaption: 'Filters'">
             </select>
-            <input type="text" placeholder="Search Here" data-bind="textInput: keyword">
-            <button type="button" name="menu-button"
+            <input type="text" placeholder="Search Here" data-bind="value: keyword, valueUpdate: 'afterkeydown'">
+            <button type="image" name="menu-button" src="assets/red_yelp.png"
                 data-bind="click: toggleMenu">
-                <i class="material-icons">menu</i>
+                <!-- <i class="material-icons">menu</i> -->
             </button>
         </div>
         <div id="location-list" data-bind="css: {close: closeMenu}">
-            <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
-                <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
-                    click: $parent.clickLocation, css: {focused: id == $parent.focusedLocation().id}">
-                    <span data-bind="text: name"></span>
-                    <!-- <span data-bind="text: $parent.checkFocused()"></span> -->
+            <div id="holder" data-bind="css: {'show-info': showInfo}">
+                <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
+                    <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
+                        click: $parent.clickLocation, css: {focused: id == $parent.focusedLocation().id}">
+                        <span data-bind="text: name"></span>
+                        <!-- <span data-bind="text: $parent.checkFocused()"></span> -->
+                    </div>
+                </div>
+                <div id="location-info-container" data-bind="with: focusedLocation">
+                    <div id="business-header">
+                        <button type="button" id="hide-info-button" data-bind="click: $parent.hideInfo">
+                            <i class="material-icons">chevron_left</i>
+                        </button>
+                        <span data-bind="text: name"></span>
+                    </div>
+                    <div id="location-info">
+                        <img id="business-image" data-bind="attr: {src: image_url, alt: name}">
+                        <div id="business-rating">
+                            <!-- ko if: price -->
+                                <div id="business-price">
+                                    <span class="title">Price</span>
+                                    <span data-bind="text: price"></span>
+                                </div>
+                            <!-- /ko -->
+                            <!-- ko if: rating > 0 -->
+                                <div id="rating-container" data-bind="html: $parent.getStarRatings(rating)"></div>
+                            <!-- /ko -->
+                        </div>
+                        <div id="location-info-address" class="info-line">
+                            <span class="title">Address</span>
+                            <div data-bind="foreach: location.display_address">
+                                <span data-bind="text: $data"></span>
+                            </div>
+                        </div>
+                        <div class="info-line">
+                            <span class="title">Phone</span>
+                            <span data-bind="text: display_phone"></span>
+                        </div>
+                        <div class="info-line" id="review-container">
+                            <span class="title">Reviews <a data-bind="attr: {href: url}" target="_blank">or view in Yelp</a></span>
+                            <div data-bind="foreach: reviews">
+                                <div class="review">
+                                    <span class="title" data-bind="text: time_created.split(' ')[0]"></span>
+                                    <div class="title" data-bind="html: $root.getStarRatings(rating)"></div>
+                                    <span class="title"><i data-bind="text: user.name"></i></span>
+                                    <p data-bind="text: text"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

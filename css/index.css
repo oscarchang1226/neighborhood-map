@@ -1,7 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Avenir', 'Roboto Condensed', sans-serif;
     height: 100vh;
 }
 
@@ -34,15 +34,51 @@ body {
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     overflow-x: hidden;
+    transition: all .4s ease-in-out;
+    width: 50%;
+    opacity: 1;
+    z-index: 3;
+}
+#location-info-container {
+    transition: all .4s ease-in-out;
+    width: 50%;
+    max-height: calc(100vh - 80px);
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+    margin: auto auto auto 0;
+}
+#holder {
+    width: 200%;
+    height: 100%;
+    display: flex;
+    transition: all .4s ease-in-out;
+}
+#holder.show-info {
+    transform: translate(-50%, 0);
+}
+#holder.show-info #location-list-container {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+}
+#holder.show-info #location-info-container {
+    margin: auto 0 auto auto;
+    opacity: 1;
+    z-index: 3;
+    position: static;
 }
 .location {
     padding: 8px 4px;
+    cursor: pointer;
 }
 .location:hover {
-    background-color: cornflowerblue;
+    background-color: rgba(211, 35, 35, 1);
+    color: rgba(255, 255,255, 1);
 }
 .location.focused {
-    background-color: cornflowerblue;
+    background-color: rgba(211, 35, 35, 1);
+    color: rgba(255, 255,255, 1);
 }
 #filters {
     position: fixed;
@@ -60,17 +96,19 @@ body {
     margin: auto 4px auto 0;
     padding: 4px 0;
     border-radius: 4px;
+    width: 100px;
 }
 #filters input {
     font-size: 14px;
     margin: auto 4px auto 0;
     padding: 4px 0 4px 4px;
-    flex: 1;
+    width: calc(100% - 130px);
     border-radius: 4px;
     outline: none;
     border: 1px solid rgba(0,0,0,.4);
 }
-#filters button {
+#filters button,
+#recenter-button {
     outline: none;
     height: 24px;
     width: 30px;
@@ -82,6 +120,96 @@ body {
     background-color: rgba(255, 255, 255, 1);
     box-shadow: 0px 1px 2px rgba(0,0,0,.4), 1px 0px 1px rgba(0,0,0,.4);
 }
-#filters button i {
+#filters button i,
+#recenter-button i {
     font-size: 18px;
+}
+#recenter-button {
+    position: fixed;
+    bottom: 64px;
+    right: 4px;
+    z-index: 2;
+}
+#location-info {
+    display: flex;
+    flex-direction: column;
+}
+#business-image {
+    width: 100%;
+    height: 250px;
+}
+#business-header {
+    min-height: 40px;
+    max-height: 48px;
+    display: flex;
+    background-color: rgba(211, 35, 35, 1);
+    color: rgba(255,255,255,1);
+}
+#hide-info-button {
+    border: none;
+    background: inherit;
+    padding: 0;
+    width: 40px;
+    cursor: pointer;
+    outline: none;
+}
+#hide-info-button i {
+    color: rgba(255,255,255,1);
+}
+#business-header span {
+    margin: auto 4px;
+    font-size: 18px;
+}
+#business-rating {
+    display: flex;
+}
+#business-price {
+    margin: auto auto auto 8px;
+}
+#rating-container {
+    margin: auto 8px auto auto;
+}
+#business-rating i.material-icons {
+    color: goldenrod;
+    font-size: 18px;
+}
+#location-info-address {
+    padding: 8px;
+}
+#location-info-address div {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.info-line {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+.info-line span:not(.title) {
+    text-align: center;
+}
+#review-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 535px);
+}
+.review {
+    padding-left: 16px;
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+.review p {
+    margin: 0;
+    width: 100%;
+}
+.review i.material-icons {
+    font-size: 12px;
+    color: goldenrod;
+}
+.review .title {
+    width: 100%;
+    text-align: right;
+    font-size: 14px;
 }
