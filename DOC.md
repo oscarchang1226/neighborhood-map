@@ -21,3 +21,14 @@
 - Submitting search term.
 - Click on location.
 - Click on marker.
+
+### TODO
+- [ ] Add filter options.
+    - [ ] Load all locations.
+    - [ ] Select filter by categories.
+    - [ ] Input filter by business name.
+- [ ] Clicking on location list animate selected marker.
+    - Hovering animation does not count.
+- [ ] Chain `fail` method after done method in AJAX request.
+- [ ] Provide fallback error handling method for `async` google maps API usage.
+    - Research how to perform asynchronous request and provide error handler with RequireJS.
