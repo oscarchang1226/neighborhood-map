@@ -1,6 +1,6 @@
 define([
     'jquery',
-    'async!https://maps.googleapis.com/maps/api/js?key=AIzaSyCzrC2FBXXLfmnizhDmCHRVMaG6JQlvbvw'
+    'async!googlemapsapi'
 ], function($) {
 
     var map;
@@ -18,7 +18,8 @@ define([
         removeFocused: removeFocused,
         panFocused: panFocused,
         recenter: recenter,
-        toggleBounce: toggleBounce
+        toggleBounce: toggleBounce,
+        mapClearIdleListeners: mapClearIdleListeners
     };
 
     function initMap(events) {
@@ -120,6 +121,7 @@ define([
     function recenter() {
         if(map) {
             map.panTo({lat: 29.8179022, lng: -95.53548160000001});
+            map.setZoom(14);
         }
     }
 
@@ -128,6 +130,12 @@ define([
             marker.setAnimation(null);
         } else {
             marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }
+
+    function mapClearIdleListeners() {
+        if(map) {
+            google.maps.event.clearListeners(map, 'idle');
         }
     }
 

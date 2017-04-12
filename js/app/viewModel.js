@@ -44,11 +44,13 @@ define([
         var mapEvents = {
             dragstart: function() {
                 vm.closeMenu(true);
-            }
+            },
+            click: function(e) {
+                vm.closeMenu(true);
+            },
+            idle: search
         };
         g.initMap(mapEvents);
-
-        search();
 
         vm.mouseOverLocation = mouseOverLocation;
         vm.mouseOutLocation = mouseOutLocation;
@@ -68,16 +70,16 @@ define([
             //     lng: obj.coordinates.longitude
             // });
 
-            if(obj.marker) {
-                g.toggleBounce(obj.marker);
-            }
+            // if(obj.marker) {
+            //     g.toggleBounce(obj.marker);
+            // }
         }
 
         function mouseOutLocation(obj) {
             // g.removeMarker();
-            if(obj.marker) {
-                g.toggleBounce(obj.marker);
-            }
+            // if(obj.marker) {
+            //     g.toggleBounce(obj.marker);
+            // }
         }
 
         function clickLocation(obj) {
@@ -85,43 +87,84 @@ define([
                 vm.showInfo(true);
                 return;
             }
-            g.nearbySearch({
-                location: obj.coordinates.latitude+','+obj.coordinates.longitude,
-                keyword: obj.name
-            }).done(function(gData) {
-                y.getReviews(obj.id).done(function(data) {
-                    var latLng = {
-                        lat: obj.coordinates.latitude,
-                        lng: obj.coordinates.longitude
-                    };
-                    if(gData.results.length > 0) {
-                        var temp = gData.results.find(function(place) {
-                            return place.name.toLowerCase().indexOf(obj.name.toLowerCase()) > -1;
-                        });
-                        latLng = temp? temp.geometry.location : latLng;
+
+            if(!obj.markerConfigured) {
+                var latLng = {
+                    lat: obj.coordinates.latitude,
+                    lng: obj.coordinates.longitude
+                };
+
+                g.nearbySearch({
+                    location: obj.coordinates.latitude+','+obj.coordinates.longitude,
+                    keyword: obj.name
+                }).done(function(gData) {
+
+                    var temp = gData.results.length == 1? gData.results.pop() : null;
+
+                    if(temp) {
+                        latLng = temp.geometry.location;
+                        // g.panFocused(latLng, focusedEvents);
+                        obj.marker.setPosition(latLng);
+
                     }
-                    g.panFocused(latLng, {click: function(){
+                    obj.markerConfigured = true;
+                    g.panMap(latLng);
+
+                }).fail(function() {
+                    window.alert('Unable to locate or pin point the coordinates of ' + obj.name + ' on Google Maps.');
+                    g.panMap(latLng);
+
+                });
+            }
+
+            clearFocused();
+
+            if(!obj.price) {
+                obj.price = '';
+            }
+
+            if(obj.marker) {
+                g.toggleBounce(obj.marker);
+            } else {
+                obj.marker = g.createMarker({
+                    lat: a.coordinates.latitude,
+                    lng: a.coordinates.longitude
+                }, {
+                    click: function() {
+                        clickLocation(obj);
                         vm.closeMenu(false);
                         vm.showInfo(true);
-                    }});
-                    g.panMap(latLng);
-                    if(!obj.price) {
-                        obj.price = '';
                     }
-                    obj.reviews = data.reviews;
-                    vm.focusedLocation(obj);
-                    vm.showInfo(true);
                 });
-            });
+                g.toggleBounce(obj.marker);
+            }
+
+            if(!obj.reviewed) {
+                y.getReviews(obj.id).done(function(data) {
+                    obj.reviews = data.reviews;
+                    obj.reviewed = true;
+                    vm.focusedLocation(obj);
+
+                }).fail(function() {
+                    window.alert('Unable to retrieve reviews for ' + obj.name + '.');
+                    obj.reviews = [];
+                    vm.focusedLocation(obj);
+                });
+            } else {
+                vm.focusedLocation(obj);
+            }
+
+            vm.showInfo(true);
+
         }
 
         function scrollLocation(data, e) {
-            if(!vm.fetching && vm.total() > vm.locations().length) {
-                ele = e.target;
-                if((ele.scrollTop + ele.offsetHeight) > (ele.scrollHeight - 100)) {
-                    search();
-                }
-            }
+            // if(!vm.fetching && vm.total() > vm.locations().length) {
+            //     ele = e.target;
+            //     if((ele.scrollTop + ele.offsetHeight) > (ele.scrollHeight - 100)) {
+            //         search();
+            //     }
+            // }
         }
 
         function toggleMenu() {
@@ -149,38 +192,35 @@ define([
             vm.locations.removeAll();
         }
 
-        function search(params) {
-            if(!params) {
-                params = generateParameters();
-            }
-            if(!vm.fetching) {
-                vm.fetching = true;
-                y.search(params).done(function(data) {
-                    vm.total(data.total);
-                    data.businesses = data.businesses.map(function(a) {
-                        a.marker = g.createMarker({
-                            lat: a.coordinates.latitude,
-                            lng: a.coordinates.longitude
-                        }, {
-                            click: function() {
-                                clickLocation(a);
-                                vm.closeMenu(false);
-                                vm.showInfo(true);
-                            }
-                        });
-                        return a;
+        function search() {
+            y.search().done(function(data) {
+                data.businesses = data.businesses.map(function(a) {
+                    a.marker = g.createMarker({
+                        lat: a.coordinates.latitude,
+                        lng: a.coordinates.longitude
+                    }, {
+                        click: function() {
+                            clickLocation(a);
+                            vm.closeMenu(false);
+                            vm.showInfo(true);
+                        }
                     });
-                    g.extendBounds(data.businesses.map(function(b) {
-                        vm.locations.push(b);
-                        return b.coordinates;
-                    }));
-                    vm.fetching = false;
+                    return a;
                 });
-            }
+                g.extendBounds(data.businesses.map(function(b) {
+                    vm.locations.push(b);
+                    return b.coordinates;
+                }));
+                g.mapClearIdleListeners();
+
+            }).fail(function() {
+                window.alert("Status 500. Unable to get locations.");
+
+            });
         }
 
         function hideInfo() {
-            vm.showInfo(false);
+            clearFocused();
         }
 
         function getStarRatings(rating, isSmall) {
@@ -198,8 +238,11 @@ define([
         }
 
         function clearFocused() {
-            g.removeFocused();
-            hideInfo();
+            // g.removeFocused();
+            if(vm.focusedLocation().marker) {
+                g.toggleBounce(vm.focusedLocation().marker);
+            }
+            vm.showInfo(false);
             vm.focusedLocation({
                 id:0,
                 name: '',
@@ -214,6 +257,7 @@ define([
                 url: ''
             });
         }
+
     }
 
 });

@@ -6,8 +6,13 @@ requirejs.config({
         'viewModel': 'app/viewModel',
         'googlemap': 'app/googlemap',
         'yelpfusion': 'app/yelpfusion',
-        'async': '../bower_components/requirejs-plugins/src/async'
-    }
+        'async': '../bower_components/requirejs-plugins/src/async',
+        'googlemapsapi': 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCzrC2FBXXLfmnizhDmCHRVMaG6JQlvbvw'
+    },
+    catchError: {
+        define: true
+    },
+    waitSeconds: 3
 });
 
 requirejs([
@@ -19,17 +24,20 @@ requirejs([
 
     v.selectedFilter.subscribe(function(filter) {
         v.clearFocused();
-        v.clearLocations();
-        v.search();
+        // v.clearLocations();
     });
 
     v.keyword.subscribe(function(keyword) {
         v.clearFocused();
-        v.clearLocations();
-        v.search();
+        // v.clearLocations();
     });
 
     ko.applyBindings(v);
-}, function(error) {
-    window.alert("Oh No! Something went wrong! Unable to load files.");
+
+}, function(errObject) {
+    requireType = errObject.requireType;
+    requireModules = errObject.requireModules;
+    console.error(requireType);
+    console.error(requireModules);
+    window.alert('Oh No! Something went wrong... \n\nError type: ' + requireType + '\n\nOccured for modules: \n\n' + requireModules.join('\n') + '\n');
 });

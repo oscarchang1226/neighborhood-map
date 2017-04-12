@@ -14,3 +14,4 @@ Single page application featuring a map of a neighborhood with additional functi
 - [Virtual Scrolling](http://stackoverflow.com/questions/17748448/knockout-virtual-scrolling-binding)
 - [Google Maps API](https://developers.google.com/maps/)
 - [Yelp Fusion](https://www.yelp.com/developers)
+- [RequireJS Examples](https://github.com/Integralist/RequireJs-Example/blob/master/Assets/Scripts/errorhandler.js)

@@ -10,16 +10,111 @@ const path = require('path');
 const g = require('@google/maps');
 const y = require('yelp-fusion');
 const keys = require('./keys.js');
+const waterfall = require('async-waterfall');
 var app = express();
 var gClient = g.createClient({key: keys.gKey});
 var yClient;
+var ySearchResult;
+
+// Read Yelp Categories
+var yCategories = require('./resources/categories.json').filter(function(c) {
+    return c.country_blacklist? c.country_blacklist.indexOf('US') < 0 : true;
+});
+var yCategoriesShortCuts = {};
+var yUniqueParentCategories = {};
+// console.log(yCategories.filter(function(c) {
+//     return c.alias == 'realestate';
+// }));
 
 // Init Yelp Client
 y.accessToken(keys.yId, keys.ySecret).then(function(response) {
     yClient = y.client(response.jsonBody.access_token);
+
+    // Get all location
+    var params = {
+        location: 'spring shadows',
+        radius: 800,
+        limit: 50
+    };
+    yClient.search(params).then(function(response) {
+        ySearchResult = response.jsonBody;
+        if(ySearchResult.total > ySearchResult.businesses.length) {
+            params.offset = ySearchResult.businesses.length;
+            var i = Math.ceil((ySearchResult.total -  ySearchResult.businesses.length) / ySearchResult.businesses.length);
+            var arr = [];
+            for(var j = 0; j < i; j++) {
+                arr.push(true);
+            }
+            arr = arr.map(function() {
+                return function(p, j, callback) {
+                    yClient.search(p).then(function(r) {
+                        j.businesses = j.businesses.concat(r.jsonBody.businesses);
+                        p.offset = j.businesses.length;
+                        callback(null, p, j);
+                    }).catch(function() {
+                        callback(true);
+                    });
+                };
+            });
+
+            waterfall([function(callback) {
+                callback(null, params, ySearchResult);
+            }].concat(arr), function(err, p, j) {
+                if(err) {
+                    ySearchResult = {total: 0, error: true};
+                } else {
+                    ySearchResult = j;
+                    // ySearchResult.businesses.forEach(function(b) {
+                    //     b.categories.forEach(function(c) {
+                    //         if(!yCategoriesShortCuts[c.alias]) {
+                    //             yCategoriesShortCuts[c.alias] = findParents(c.alias);
+                    //         }
+                    //     });
+                    // });
+                    // ySearchResult.categories = yCategoriesShortCuts;
+                    // ySearchResult.categoryHeaders = yUniqueParentCategories;
+                }
+            });
+        }
+    }).catch(function(e) {
+        ySearchResult = {total: 0, error: true};
+    });
+
 }).catch(function(e) {
     console.err(e);
 });
+
+console.log(findParents('swimminglessons'));
+// console.log(findParents('restaurants'));
+// console.log(findParents('apartments'));
+console.log(findParents('apartments'));
+console.log(findParents('mortgagebrokers'));
+
+////////// SERVER UTILS //////////
+function findParents(alias) {
+    // TODO: Get parent by child. Capable of having multiple parents
+    if(yCategoriesShortCuts[alias]) {
+        return yCategoriesShortCuts[alias];
+    }
+    var t = yCategories.find(function(c) {
+        return c.alias == alias;
+    });
+    if(t) {
+        if(t.parents.length === 0) {
+            if(!yUniqueParentCategories[t.alias]) {
+                yUniqueParentCategories[t.alias] = t;
+            }
+            return t;
+        } else {
+            return t.parents.map(function(p) {
+                return findParents(p);
+            });
+        }
+    } else {
+        return [];
+    }
+}
+/////////////////////////////////
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
@@ -59,19 +154,12 @@ app.get('/google/placeDetails/:placeId', function(req, res) {
 });
 
 app.get('/yelp/search', function(req, res) {
-    // if(!req.query.hasOwnProperty('latitude') || !req.query.hasOwnProperty('longitude')) {
-    //     req.query.latitude = 29.8179022;
-    //     req.query.longitude = -95.53548160000001;
-    // }
-    req.query.location = 'spring shadows';
-    req.query.radius = req.query.radius || 800;
 
-    yClient.search(req.query).then(function(response) {
-        res.json(response.jsonBody);
-    }).catch(function(e) {
-        res.status(500).json({total: 0});
-    });
-
+    if(ySearchResult.error) {
+        res.status(500).json(ySearchResult);
+    } else {
+        res.json(ySearchResult);
+    }
 });
 
 app.get('/yelp/business/:id/reviews', function(req, res) {
