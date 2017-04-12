@@ -7,122 +7,93 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
         <link rel="stylesheet" href="css/index.css">
-        <link rel="stylesheet" href="css/index-medium.css" media="screen and (min-width:450px)">
+        <link rel="stylesheet" href="css/index-medium.css" media="screen and (min-width:400px)">
         <link rel="stylesheet" href="css/index-large.css" media="screen and (min-width:650px)">
         <link rel="stylesheet" href="css/material-icons.css">
     </head>
     <body>
-        <!-- <google-map></google-map> -->
-        <nav class="close">
-            <input type="text" data-bind="textInput: userInput">
-            <button type="button" name="menu" id="menu-button" title="Location List">
-                <i class="material-icons md-18">menu</i>
-            </button>
-            <button type="button" name="clear" id="clear-button" data-bind="click: clearMarkers" title="Clear Markers">
-                <i class="material-icons md-18">clear</i>
-            </button>
-            <button type="button" name="recenter" id="recenter-button" data-bind="click: recenter" title="Recenter">
-                <i class="material-icons md-18">my_location</i>
-            </button>
-            <button type="button" name="demographics" id="demographics-button" title="Demographics">
-                <i class="material-icons md-18">poll</i>
-            </button>
-            <div id="ul-container">
-                <!-- ko if: locations().length > 0 -->
-                <ul data-bind="foreach: locations">
-                    <li data-bind="click: $parent.locationClick">
-                        <span data-bind="text: name"></span>
-                        <span class="sub" data-bind="text: vicinity"></span>
-                    </li>
-                </ul>
-                <!-- /ko -->
-                <!-- ko if: locations().length == 0 -->
-                <ul>
-                    <li>
-                        <span>No results found.</span>
-                    </li>
-                </ul>
-                <!-- /ko -->
-            </div>
-        </nav>
-        <div id="location" class="close">
-            <button type="button" name="close" id="location-button" title="Location Details">
-                <i class="material-icons md-18" data-bind="text: locationButtonIcon"></i>
-            </button>
-            <div data-bind="with: location">
-                <div class="header">
-                    <span data-bind="text: name"></span>
-                </div>
-                <a target="_blank" class="image-container" data-bind="attr: {href: $parent.getLocationUrl()}">
-                    <img alt="location image" data-bind="attr: {src: $parent.imageUrl}"/>
-                </a>
-                <div class="image-controls">
-                    <button type="button" name="previous" data-bind="click: $parent.previousPhoto">
-                        <i class="material-icons md-18">chevron_left</i>
-                    </button>
-                    <button type="button" name="next" data-bind="click: $parent.nextPhoto">
-                        <i class="material-icons md-18">chevron_right</i>
-                    </button>
-                </div>
-                <address data-bind="html: formatted_address"></address>
-                <span data-bind="text: international_phone_number"></span>
-                <span data-bind="text: $parent.getOpeningHours()"></span>
-                <a class="link" target="_blank" data-bind="attr: {href: $parent.getLocationUrl()}">View on Google Maps</a>
-            </div>
-        </div>
-        <div id="demographics" class="close">
-            <div class="content">
-                <div class="container">
-                    <div class="header">
-                        <i class="material-icons md-18">attach_money</i>
-                        <span>Income(in thousands) &#37;</span>
-                    </div>
-                    <table>
-                        <tr>
-                            <td>&lt; 25</td>
-                            <td data-bind="text: getDemographicsInfo('incomeLessThan25')"></td>
-                        </tr>
-                        <tr>
-                            <td>25~50</td>
-                            <td data-bind="text: getDemographicsInfo('incomeBetween25to50')"></td>
-                        </tr>
-                        <tr>
-                            <td>50~100</td>
-                            <td data-bind="text: getDemographicsInfo('incomeBetween50to100')"></td>
-                        </tr>
-                        <tr>
-                            <td>100~200</td>
-                            <td data-bind="text: getDemographicsInfo('incomeBetween100to200')"></td>
-                        </tr>
-                        <tr>
-                            <td>&gt; 200</td>
-                            <td data-bind="text: getDemographicsInfo('incomeGreater200')"></td>
-                        </tr>
-                        <tr>
-                            <td>Median</td>
-                            <td data-bind="text: getDemographicsInfo('medianIncome')"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="container">
-                    <div class="header">
-                        <i class="material-icons md-18">school</i>
-                        <span>Education &#37;</span>
-                    </div>
-                    <table>
-                        <tr>
-                            <td>&le; Bachelor</td>
-                            <td data-bind="text: getDemographicsInfo('educationBachelorOrGreater')"></td>
-                        </tr>
-                        <tr>
-                            <td>&le; High School</td>
-                            <td data-bind="text: getDemographicsInfo('educationHighSchoolGraduate')"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
+
         <div id="map"></div>
-        <script data-main="js/app" type="text/javascript" src="bower_components/requirejs/require.js"></script>
+        <button type="button" aria-label="recenter" id="recenter-button" data-bind="click: recenter">
+            <i class="material-icons">my_location</i>
+        </button>
+        <div id="filters" data-bind="css: {close: closeMenu}">
+            <select data-bind="options: optionsFilters,
+                                optionsText: 'label',
+                                value: selectedFilter,
+                                optionsCaption: 'Filters'">
+            </select>
+            <input type="text" placeholder="Search Here" data-bind="value: keyword, valueUpdate: 'afterkeydown'">
+            <button type="button" name="menu-button"
+                data-bind="click: toggleMenu">
+                <i class="material-icons">menu</i>
+            </button>
+        </div>
+        <div id="location-list" data-bind="css: {close: closeMenu}">
+            <div id="no-results" data-bind="if: locations().length == 0, css: {show: locations().length == 0}">
+                <span>No results found...</span>
+            </div>
+            <div id="holder" data-bind="css: {'show-info': showInfo}">
+                <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
+                    <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
+                        click: $parent.clickLocation, css: {focused: id == $parent.focusedLocation().id}">
+                        <span data-bind="text: name"></span>
+                        <!-- <span data-bind="text: $parent.checkFocused()"></span> -->
+                    </div>
+                </div>
+                <div id="location-info-container" data-bind="with: focusedLocation">
+                    <div id="business-header">
+                        <button type="button" id="hide-info-button" data-bind="click: $parent.hideInfo">
+                            <i class="material-icons">chevron_left</i>
+                        </button>
+                        <span data-bind="text: name"></span>
+                    </div>
+                    <div id="location-info">
+                        <img id="business-image" data-bind="attr: {src: image_url, alt: name}">
+                        <div id="information">
+                            <div id="business-rating">
+                                <!-- ko if: price -->
+                                    <div id="business-price">
+                                        <span class="title">Price</span>
+                                        <span data-bind="text: price"></span>
+                                    </div>
+                                <!-- /ko -->
+                                    <!-- <div id="rating-container" data-bind="html: $parent.getStarRatings(rating)"></div> -->
+                                    <img alt="business rating" width="123" height="21" data-bind="attr: {src: $parent.getStarRatings(rating)}">
+                            </div>
+                            <div id="location-info-address" class="info-line">
+                                <span class="title">Address</span>
+                                <div data-bind="foreach: location.display_address">
+                                    <span data-bind="text: $data"></span>
+                                </div>
+                            </div>
+                            <div class="info-line">
+                                <span class="title">Phone</span>
+                                <span data-bind="text: display_phone"></span>
+                            </div>
+                            <div class="info-line" id="review-container">
+                                <span class="title">Reviews <a data-bind="attr: {href: url}" target="_blank">or view in Yelp</a></span>
+                                <div data-bind="foreach: reviews">
+                                    <div class="review">
+                                        <span class="title" data-bind="text: time_created.split(' ')[0]"></span>
+                                        <!-- <div class="title" data-bind="html: $root.getStarRatings(rating)"></div> -->
+                                        <img alt="business rating" width="82" height="14" data-bind="attr: {src: $root.getStarRatings(rating, 'small')}">
+                                        <span class="title"><i data-bind="text: user.name"></i></span>
+                                        <p data-bind="text: text"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="yelp-brand">
+                <a href="https://www.yelp.com/" target="_blank">
+                    <img src="dist/yelp_trademark-100x64.png" alt="Yelp" height="64" width="100">
+                </a>
+            </div>
+        </div>
+
+        <script data-main="js/main" type="text/javascript" src="bower_components/requirejs-plugins/lib/require.js"></script>
     </body>
 </html>

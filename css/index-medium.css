@@ -1,10 +1,12 @@
-nav input[type="text"] {
-    width: calc(100% - 250px);
+#filters {
+    width: 400px;
 }
-div#ul-container {
-    width: calc(100% - 191px);
+#location-list {
+    width: 400px;
 }
-#demographics {
-    width: 450px;
-    right: 0;
+#review-container {
+    max-height: calc(100vh - 566px);
+}
+#business-image {
+    height: 250px;
 }
