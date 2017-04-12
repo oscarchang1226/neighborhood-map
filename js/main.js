@@ -30,4 +30,6 @@ requirejs([
     });
 
     ko.applyBindings(v);
+}, function(error) {
+    window.alert("Oh No! Something went wrong! Unable to load files.");
 });
