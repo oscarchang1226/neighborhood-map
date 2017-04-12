@@ -4,7 +4,6 @@ define([
 ], function($) {
 
     var map;
-    var marker;
     var focused;
     var bounds;
 
@@ -14,13 +13,12 @@ define([
         getDetails: getDetails,
         nearbySearch: nearbySearch,
         createMarker: createMarker,
-        removeMarker: removeMarker,
         extendBounds: extendBounds,
-        panMarker: panMarker,
         createFocused: createFocused,
         removeFocused: removeFocused,
         panFocused: panFocused,
-        recenter: recenter
+        recenter: recenter,
+        toggleBounce: toggleBounce
     };
 
     function initMap(events) {
@@ -65,20 +63,16 @@ define([
     function createMarker(latLng, events, options) {
         options = Object.assign({
             map:map,
-            animation: google.maps.Animation.BOUNCE,
+            animation: google.maps.Animation.DROP,
             position: latLng
         }, options || {});
-        marker = new google.maps.Marker(options);
+        var marker = new google.maps.Marker(options);
 
         for(var action in events) {
             marker.addListener(action, events[action]);
         }
-    }
 
-    function removeMarker() {
-        if(marker) {
-            marker.setMap(null);
-        }
+        return marker;
     }
 
     function extendBounds(arr) {
@@ -91,17 +85,6 @@ define([
             bounds.union(new google.maps.LatLngBounds(latLng));
         });
         map.fitBounds(bounds);
-    }
-
-    function panMarker(latLng) {
-        if(!marker) {
-            createMarker(latLng);
-        } else {
-            if(!marker.getMap()) {
-                marker.setMap(map);
-            }
-            marker.setPosition(latLng);
-        }
     }
 
     function createFocused(latLng, events, options) {
@@ -137,6 +120,14 @@ define([
     function recenter() {
         if(map) {
             map.panTo({lat: 29.8179022, lng: -95.53548160000001});
+        }
+    }
+
+    function toggleBounce(marker) {
+        if(marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+        } else {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
         }
     }
 

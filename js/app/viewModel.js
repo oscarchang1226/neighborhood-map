@@ -63,14 +63,21 @@ define([
         vm.recenter = g.recenter;
 
         function mouseOverLocation(obj) {
-            g.panMarker({
-                lat: obj.coordinates.latitude,
-                lng: obj.coordinates.longitude
-            });
+            // g.panMarker({
+            //     lat: obj.coordinates.latitude,
+            //     lng: obj.coordinates.longitude
+            // });
+
+            if(obj.marker) {
+                g.toggleBounce(obj.marker);
+            }
         }
 
-        function mouseOutLocation() {
-            g.removeMarker();
+        function mouseOutLocation(obj) {
+            // g.removeMarker();
+            if(obj.marker) {
+                g.toggleBounce(obj.marker);
+            }
         }
 
         function clickLocation(obj) {
@@ -136,6 +143,9 @@ define([
         }
 
         function clearLocations() {
+            vm.locations().forEach(function(b) {
+                b.marker.setMap(null);
+            });
             vm.locations.removeAll();
         }
 
@@ -147,6 +157,19 @@ define([
                 vm.fetching = true;
                 y.search(params).done(function(data) {
                     vm.total(data.total);
+                    data.businesses = data.businesses.map(function(a) {
+                        a.marker = g.createMarker({
+                            lat: a.coordinates.latitude,
+                            lng: a.coordinates.longitude
+                        }, {
+                            click: function() {
+                                clickLocation(a);
+                                vm.closeMenu(false);
+                                vm.showInfo(true);
+                            }
+                        });
+                        return a;
+                    });
                     g.extendBounds(data.businesses.map(function(b) {
                         vm.locations.push(b);
                         return b.coordinates;
