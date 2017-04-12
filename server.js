@@ -23,6 +23,7 @@ y.accessToken(keys.yId, keys.ySecret).then(function(response) {
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
+app.use('/dist', express.static(__dirname + '/dist'));
 app.use('/assets', express.static(__dirname + '/assets'));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 

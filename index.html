@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
         <link rel="stylesheet" href="css/index.css">
-        <link rel="stylesheet" href="css/index-medium.css" media="screen and (min-width:450px)">
+        <link rel="stylesheet" href="css/index-medium.css" media="screen and (min-width:400px)">
         <link rel="stylesheet" href="css/index-large.css" media="screen and (min-width:650px)">
         <link rel="stylesheet" href="css/material-icons.css">
     </head>
@@ -24,12 +24,15 @@
                                 optionsCaption: 'Filters'">
             </select>
             <input type="text" placeholder="Search Here" data-bind="value: keyword, valueUpdate: 'afterkeydown'">
-            <button type="image" name="menu-button" src="assets/red_yelp.png"
+            <button type="button" name="menu-button"
                 data-bind="click: toggleMenu">
-                <!-- <i class="material-icons">menu</i> -->
+                <i class="material-icons">menu</i>
             </button>
         </div>
         <div id="location-list" data-bind="css: {close: closeMenu}">
+            <div id="no-results" data-bind="if: locations().length == 0, css: {show: locations().length == 0}">
+                <span>No results found...</span>
+            </div>
             <div id="holder" data-bind="css: {'show-info': showInfo}">
                 <div id="location-list-container" data-bind="foreach: locations, event: {scroll: scrollLocation}">
                     <div class="location" data-bind="event: {mouseover: $parent.mouseOverLocation, mouseout: $parent.mouseOutLocation},
@@ -47,40 +50,47 @@
                     </div>
                     <div id="location-info">
                         <img id="business-image" data-bind="attr: {src: image_url, alt: name}">
-                        <div id="business-rating">
-                            <!-- ko if: price -->
-                                <div id="business-price">
-                                    <span class="title">Price</span>
-                                    <span data-bind="text: price"></span>
-                                </div>
-                            <!-- /ko -->
-                            <!-- ko if: rating > 0 -->
-                                <div id="rating-container" data-bind="html: $parent.getStarRatings(rating)"></div>
-                            <!-- /ko -->
-                        </div>
-                        <div id="location-info-address" class="info-line">
-                            <span class="title">Address</span>
-                            <div data-bind="foreach: location.display_address">
-                                <span data-bind="text: $data"></span>
+                        <div id="information">
+                            <div id="business-rating">
+                                <!-- ko if: price -->
+                                    <div id="business-price">
+                                        <span class="title">Price</span>
+                                        <span data-bind="text: price"></span>
+                                    </div>
+                                <!-- /ko -->
+                                    <!-- <div id="rating-container" data-bind="html: $parent.getStarRatings(rating)"></div> -->
+                                    <img alt="business rating" width="123" height="21" data-bind="attr: {src: $parent.getStarRatings(rating)}">
                             </div>
-                        </div>
-                        <div class="info-line">
-                            <span class="title">Phone</span>
-                            <span data-bind="text: display_phone"></span>
-                        </div>
-                        <div class="info-line" id="review-container">
-                            <span class="title">Reviews <a data-bind="attr: {href: url}" target="_blank">or view in Yelp</a></span>
-                            <div data-bind="foreach: reviews">
-                                <div class="review">
-                                    <span class="title" data-bind="text: time_created.split(' ')[0]"></span>
-                                    <div class="title" data-bind="html: $root.getStarRatings(rating)"></div>
-                                    <span class="title"><i data-bind="text: user.name"></i></span>
-                                    <p data-bind="text: text"></p>
+                            <div id="location-info-address" class="info-line">
+                                <span class="title">Address</span>
+                                <div data-bind="foreach: location.display_address">
+                                    <span data-bind="text: $data"></span>
+                                </div>
+                            </div>
+                            <div class="info-line">
+                                <span class="title">Phone</span>
+                                <span data-bind="text: display_phone"></span>
+                            </div>
+                            <div class="info-line" id="review-container">
+                                <span class="title">Reviews <a data-bind="attr: {href: url}" target="_blank">or view in Yelp</a></span>
+                                <div data-bind="foreach: reviews">
+                                    <div class="review">
+                                        <span class="title" data-bind="text: time_created.split(' ')[0]"></span>
+                                        <!-- <div class="title" data-bind="html: $root.getStarRatings(rating)"></div> -->
+                                        <img alt="business rating" width="82" height="14" data-bind="attr: {src: $root.getStarRatings(rating, 'small')}">
+                                        <span class="title"><i data-bind="text: user.name"></i></span>
+                                        <p data-bind="text: text"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div id="yelp-brand">
+                <a href="https://www.yelp.com/" target="_blank">
+                    <img src="dist/yelp_trademark-100x64.png" alt="Yelp" height="64" width="100">
+                </a>
             </div>
         </div>
 

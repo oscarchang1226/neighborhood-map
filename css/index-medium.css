@@ -1,0 +1,12 @@
+#filters {
+    width: 400px;
+}
+#location-list {
+    width: 400px;
+}
+#review-container {
+    max-height: calc(100vh - 566px);
+}
+#business-image {
+    height: 250px;
+}

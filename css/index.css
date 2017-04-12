@@ -31,7 +31,7 @@ body {
     transform: translate(calc(-100% + 26px),0);
 }
 #location-list-container {
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 146px);
     overflow-y: auto;
     overflow-x: hidden;
     transition: all .4s ease-in-out;
@@ -42,7 +42,7 @@ body {
 #location-info-container {
     transition: all .4s ease-in-out;
     width: 50%;
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 146px);
     position: absolute;
     opacity: 0;
     z-index: -1;
@@ -97,6 +97,7 @@ body {
     padding: 4px 0;
     border-radius: 4px;
     width: 100px;
+    outline: none;
 }
 #filters input {
     font-size: 14px;
@@ -136,7 +137,7 @@ body {
 }
 #business-image {
     width: 100%;
-    height: 250px;
+    height: 150px;
 }
 #business-header {
     min-height: 40px;
@@ -162,9 +163,10 @@ body {
 }
 #business-rating {
     display: flex;
+    padding: 2px 8px;
 }
 #business-price {
-    margin: auto auto auto 8px;
+    margin: auto auto auto 0px;
 }
 #rating-container {
     margin: auto 8px auto auto;
@@ -174,7 +176,8 @@ body {
     font-size: 18px;
 }
 #location-info-address {
-    padding: 8px;
+    padding: 2px 8px;
+    font-size: 14px;
 }
 #location-info-address div {
     display: flex;
@@ -184,7 +187,8 @@ body {
 .info-line {
     display: flex;
     flex-direction: column;
-    padding: 8px;
+    padding: 2px 8px;
+    font-size: 14px;
 }
 .info-line span:not(.title) {
     text-align: center;
@@ -192,7 +196,7 @@ body {
 #review-container {
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: calc(100vh - 535px);
+    max-height: calc(100vh - 480px);
 }
 .review {
     padding-left: 16px;
@@ -212,4 +216,16 @@ body {
     width: 100%;
     text-align: right;
     font-size: 14px;
+}
+.review img {
+    margin-left: auto;
+}
+#yelp-brand {
+    display: flex;
+    flex-direction: row-reverse;
+    background-color: rgba(211, 35, 35, 1);
+    height: 64px;
+}
+#no-results.show {
+    padding: 8px;
 }

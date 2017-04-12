@@ -8,24 +8,6 @@ define([
     return ViewModel;
 
     function ViewModel() {
-        var mapEvents = {
-            click: function(e) {
-                // if(e.placeId) {
-                //     e.stop();
-                //     g.removeMarker();
-                //     g.getDetails(e.placeId).done(function(data) {
-                //         if(data.status == 'OK') {
-                //             g.panMap(data.result.geometry.location);
-                //             g.createMarker(data.result.geometry.location);
-                //         } else {
-                //             window.alert('Something went wrong. Unable to retrieve place details.');
-                //         }
-                //     });
-                // }
-            }
-        };
-        g.initMap(mapEvents);
-
         var vm = this;
         vm.locations = ko.observableArray();
         vm.total = ko.observable(0);
@@ -58,6 +40,13 @@ define([
         ]);
         vm.selectedFilter = ko.observable({});
         vm.keyword = ko.observable('');
+
+        var mapEvents = {
+            dragstart: function() {
+                vm.closeMenu(true);
+            }
+        };
+        g.initMap(mapEvents);
 
         search();
 
@@ -141,7 +130,7 @@ define([
                 params.categories = vm.selectedFilter().value;
             }
             if(vm.keyword() && vm.keyword().trim().length > 3) {
-                params.term = vm.keyword();
+                params.term = vm.keyword().replace(/\s/g, '').toUpperCase();
             }
             return params;
         }
@@ -171,16 +160,18 @@ define([
             vm.showInfo(false);
         }
 
-        function getStarRatings(rating) {
-            var s = '';
-            while(rating >= 1) {
-                s += '<i class="material-icons">star</i>';
-                rating -= 1;
+        function getStarRatings(rating, isSmall) {
+            var s = 'dist/small';
+            var i = Math.floor(rating);
+            var r = rating % 1;
+            s += '_'+i;
+            if(i > 0 && r > 0) {
+                s += '_half';
             }
-            if(rating >= 0.5) {
-                s += '<i class="material-icons">star_half</i>';
+            if(!isSmall) {
+                s += '@2x';
             }
-            return s;
+            return s + '.png';
         }
 
         function clearFocused() {
