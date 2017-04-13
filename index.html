@@ -18,9 +18,9 @@
         </button>
         <div id="filters" data-bind="css: {close: closeMenu}">
             <select data-bind="options: optionsFilters,
-                                optionsText: 'label',
+                                optionsText: 'title',
                                 value: selectedFilter,
-                                optionsCaption: 'Filters'">
+                                optionsCaption: 'All'">
             </select>
             <input type="text" placeholder="Search Here" data-bind="value: keyword, valueUpdate: 'afterkeydown'">
             <button type="button" name="menu-button"

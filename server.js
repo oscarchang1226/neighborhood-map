@@ -64,15 +64,11 @@ y.accessToken(keys.yId, keys.ySecret).then(function(response) {
                     ySearchResult = {total: 0, error: true};
                 } else {
                     ySearchResult = j;
-                    // ySearchResult.businesses.forEach(function(b) {
-                    //     b.categories.forEach(function(c) {
-                    //         if(!yCategoriesShortCuts[c.alias]) {
-                    //             yCategoriesShortCuts[c.alias] = findParents(c.alias);
-                    //         }
-                    //     });
-                    // });
+                    ySearchResult.businesses.forEach(function(b) {
+                        findBusinessCategoryParentHelper(b);
+                    });
                     // ySearchResult.categories = yCategoriesShortCuts;
-                    // ySearchResult.categoryHeaders = yUniqueParentCategories;
+                    ySearchResult.categoryHeaders = yUniqueParentCategories;
                 }
             });
         }
@@ -84,11 +80,11 @@ y.accessToken(keys.yId, keys.ySecret).then(function(response) {
     console.err(e);
 });
 
-console.log(findParents('swimminglessons'));
+// console.log(findParents('swimminglessons'));
 // console.log(findParents('restaurants'));
 // console.log(findParents('apartments'));
-console.log(findParents('apartments'));
-console.log(findParents('mortgagebrokers'));
+// console.log(findParents('apartments'));
+// console.log(findParents('mortgagebrokers'));
 
 ////////// SERVER UTILS //////////
 function findParents(alias) {
@@ -105,14 +101,36 @@ function findParents(alias) {
                 yUniqueParentCategories[t.alias] = t;
             }
             return t;
+        } else if(t.parents.length === 1) {
+            return findParents(t.parents[0]);
         } else {
-            return t.parents.map(function(p) {
-                return findParents(p);
+            var a = [];
+            t.parents.forEach(function(p) {
+                a.push(findParents(p));
             });
+            return a;
         }
     } else {
         return [];
     }
+}
+
+function findBusinessCategoryParentHelper(b) {
+    if(b.parentCategories) {
+        return;
+    }
+    b.parentCategories = [];
+    b.categories.forEach(function(c) {
+        if(!yCategoriesShortCuts[c.alias]) {
+            yCategoriesShortCuts[c.alias] = findParents(c.alias);
+        }
+
+        if(Array.isArray(yCategoriesShortCuts[c.alias])) {
+            b.parentCategories = b.parentCategories.concat(yCategoriesShortCuts[c.alias]);
+        } else {
+            b.parentCategories.push(yCategoriesShortCuts[c.alias]);
+        }
+    });
 }
 /////////////////////////////////
 

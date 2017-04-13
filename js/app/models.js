@@ -3,9 +3,10 @@ define([
 ], function(ko) {
     'use strict';
 
-    function OptionsFilter(label, value) {
-        this.label = label;
-        this.value = value;
+    function OptionsFilter(alias, title, parents) {
+        this.alias = alias;
+        this.title = title;
+        this.parents = parents;
     }
 
     return {

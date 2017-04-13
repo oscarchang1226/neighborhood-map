@@ -19,7 +19,9 @@ define([
         panFocused: panFocused,
         recenter: recenter,
         toggleBounce: toggleBounce,
-        mapClearIdleListeners: mapClearIdleListeners
+        mapClearIdleListeners: mapClearIdleListeners,
+        removeMarker: removeMarker,
+        addMarker: addMarker
     };
 
     function initMap(events) {
@@ -136,6 +138,16 @@ define([
     function mapClearIdleListeners() {
         if(map) {
             google.maps.event.clearListeners(map, 'idle');
+        }
+    }
+
+    function removeMarker(m) {
+        m.setMap(null);
+    }
+
+    function addMarker(m) {
+        if(map) {
+            m.setMap(map);
         }
     }
 

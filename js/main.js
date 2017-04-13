@@ -24,12 +24,12 @@ requirejs([
 
     v.selectedFilter.subscribe(function(filter) {
         v.clearFocused();
-        // v.clearLocations();
+        v.filterLocation();
     });
 
     v.keyword.subscribe(function(keyword) {
         v.clearFocused();
-        // v.clearLocations();
+        v.filterLocation();
     });
 
     ko.applyBindings(v);

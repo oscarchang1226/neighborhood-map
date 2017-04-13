@@ -23,10 +23,10 @@
 - Click on marker.
 
 ### TODO
-- [ ] Add filter options.
+- [x] Add filter options.
     - [x] Load all locations.
-    - [ ] Select filter by categories.
-    - [ ] Input filter by business name.
+    - [x] Select filter by categories.
+    - [x] Input filter by business name.
 - [x] Clicking on location list animate selected marker.
     - Hovering animation does not count.
 - [x] Chain `fail` method after done method in AJAX request.

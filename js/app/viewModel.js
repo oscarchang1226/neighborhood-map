@@ -10,6 +10,7 @@ define([
     function ViewModel() {
         var vm = this;
         vm.locations = ko.observableArray();
+        vm.allLocations = ko.observableArray();
         vm.total = ko.observable(0);
         vm.showInfo = ko.observable(false);
         vm.focusedLocation = ko.observable({
@@ -30,13 +31,13 @@ define([
             return vm.focusedLocation()? vm.focusedLocation().id == data.id : false;
         });
         vm.optionsFilters = ko.observableArray([
-            new m.OptionsFilter('Restaurants', 'restaurants'),
-            new m.OptionsFilter('Apartments', 'apartments'),
-            new m.OptionsFilter('Banks', 'banks'),
-            new m.OptionsFilter('Grocery', 'grocery'),
-            new m.OptionsFilter('Health', 'health'),
-            new m.OptionsFilter('Fitness', 'fitness'),
-            new m.OptionsFilter('Hotels', 'hotelstravel')
+            // new m.OptionsFilter('Restaurants', 'restaurants'),
+            // new m.OptionsFilter('Apartments', 'apartments'),
+            // new m.OptionsFilter('Banks', 'banks'),
+            // new m.OptionsFilter('Grocery', 'grocery'),
+            // new m.OptionsFilter('Health', 'health'),
+            // new m.OptionsFilter('Fitness', 'fitness'),
+            // new m.OptionsFilter('Hotels', 'hotelstravel')
         ]);
         vm.selectedFilter = ko.observable({});
         vm.keyword = ko.observable('');
@@ -62,6 +63,7 @@ define([
         vm.hideInfo = hideInfo;
         vm.getStarRatings = getStarRatings;
         vm.clearFocused = clearFocused;
+        vm.filterLocation = filterLocation;
         vm.recenter = g.recenter;
 
         function mouseOverLocation(obj) {
@@ -207,8 +209,14 @@ define([
                     });
                     return a;
                 });
+                Object.keys(data.categoryHeaders).forEach(function(c) {
+                    vm.optionsFilters.push(data.categoryHeaders[c]);
+                });
+                // vm.optionsFilters(data.categoryHeaders) = vm.optionsFilters(data.categoryHeaders);
+                var a;
                 g.extendBounds(data.businesses.map(function(b) {
                     vm.locations.push(b);
+                    vm.allLocations.push(b);
                     return b.coordinates;
                 }));
                 g.mapClearIdleListeners();
@@ -256,6 +264,40 @@ define([
                 reviews: [],
                 url: ''
             });
+        }
+
+        function filterLocation() {
+            var filterOutFunc;
+            if(vm.selectedFilter() && vm.keyword().trim().length > 0) {
+                filterOutFunc = function(a) {
+                    return a.name.toLowerCase().indexOf(vm.keyword().toLowerCase()) == -1 || a.parentCategories.find(function(b) {
+                        return b.alias != vm.selectedFilter().alias;
+                    });
+                };
+
+            } else if(vm.selectedFilter()) {
+                filterOutFunc = function(a) {
+                    return a.parentCategories.find(function(b) {
+                        return b.alias != vm.selectedFilter().alias;
+                    });
+                };
+            } else if(vm.keyword().trim().length > 0) {
+                filterOutFunc = function(a) {
+                    return a.name.toLowerCase().indexOf(vm.keyword().toLowerCase()) == -1;
+                };
+            }
+
+            vm.locations.removeAll();
+            vm.allLocations().forEach(function(location) {
+                g.addMarker(location.marker);
+                vm.locations.push(location);
+            });
+
+            if(filterOutFunc) {
+                vm.locations.remove(filterOutFunc).forEach(function(location) {
+                    g.removeMarker(location.marker);
+                });
+            }
         }
 
     }
